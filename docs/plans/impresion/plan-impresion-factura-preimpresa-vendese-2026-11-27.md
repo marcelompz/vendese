@@ -5,7 +5,7 @@
 | id | PLAN-impresion-factura-preimpresa-vendese-2026-11-27 (id estable: se conserva si se amplía el alcance) |
 | titulo | Impresión de factura preimpresa en @vendese sobre formulario físico, con plantilla configurable en milímetros y validación en VM Windows 10 |
 | dominio | impresion (transversal: POS / ticket / reportes) |
-| estado | en_progreso (código, plantilla y tests implementados; pendiente de build/tests en VM Windows 10, PDF virtual y autorización para papel real) |
+| estado | en_progreso (código, build/tests en Linux y Windows 10 y vista PDF virtual validados; pendiente de medir el formulario físico y de autorización para papel real) |
 | owner | Marcelo Pesallaccia (@marcelompz) |
 | version_objetivo | 3.83 (sin cambios de esquema previstos; si aparecen, upgrade 3.82 → 3.83 en los 5 motores) |
 | fecha | 2026-11-27 |
@@ -95,13 +95,13 @@ Excluye: facturación electrónica, envío a organismos fiscales, timbrado/firma
 - [x] Render Java2D implementado sin dependencias nuevas y compatible con Java 7.
 - [x] Plantilla en mm con override en `%USERPROFILE%` (verificación en runtime pendiente).
 - [x] Dos copias y un único disparador de impresión; sin duplicar el ticket térmico.
-- [x] `ant -f build.xml clean test dist` OK en JDK 8/Linux (71 tests, 0 fallos) y nuevas suites registradas en `build_working.xml`; falta repetir en Windows 10.
-- [ ] Evidencia de build/tests y de la validación en VM Windows 10 (PDF virtual; papel real solo con autorización).
+- [x] `ant -f build.xml clean test dist` OK en JDK 8/Linux y, de nuevo, en VM Windows 10 (71 tests, 0 fallos en ambos); suites registradas en `build_working.xml`.
+- [x] Evidencia de build/tests y de la validación en VM Windows 10; PDF virtual generado desde el mismo `Printable` con iText (la VM no tiene impresoras instaladas). Papel real pendiente de autorización.
 - [x] `README.md`, `ARCHITECTURE.md` y `docs/plans/ACTIVE.md` sincronizados.
 - [x] GPL v3, atribución a uniCenta oPOS / Jack Gerrard y a Marcelo Pesallaccia (@marcelompz) conservadas.
 - [x] Sin cambios de esquema (no aplica migración).
 
-El plan permanece en `borrador` hasta que se apruebe y se autorice la prueba en papel; el paso a `propuesto`/`aprobado` requiere decisión explícita registrada abajo.
+El plan permanece `en_progreso` hasta que se mida el formulario físico y se autorice la prueba en papel; el cierre requiere decisión explícita registrada abajo.
 
 ## Seguimiento y evidencia
 
@@ -115,8 +115,11 @@ El plan permanece en `borrador` hasta que se apruebe y se autorice la prueba en 
 | 2026-11-27 | Base Java2D/`Printable` ya presente en `BasicTicketForPrinter` y `PrintableBasicTicket`; no hay soporte de factura preimpresa ni tests de impresión. | Revisión de `printer/ticket/`, `printer/printer/` y `test/` |
 | 2026-11-27 | Implementados `InvoiceTemplate`, `InvoiceData`, `SpanishAmountToWords`, `PreprintedInvoicePrintable` e `InvoicePrintService`; plantilla por defecto y hook en `JPanelTicket`. | `git diff` / archivos nuevos |
 | 2026-11-27 | 5 suites JUnit nuevas registradas en `build_working.xml`; documentación de diseño, README y ARQUITECTURA actualizadas. | `test/com/openbravo/pos/printer/invoice/`, `docs/plans/impresion/diseno-factura-preimpresa-vendese.md` |
-| 2026-11-27 | `ant -f build.xml clean test dist` OK en JDK 8 (Temurin 8u514): 570 fuentes, 71 tests, 0 fallos; ZIPs `unicentaopos_3.82_bin.zip` y `..._src.zip` generados. Correcciones publicadas en `1427922`. | Salida de Ant en host Linux; pendiente de repetir en VM Windows 10 |
+| 2026-11-27 | `ant -f build.xml clean test dist` OK en JDK 8 (Temurin 8u514): 570 fuentes, 71 tests, 0 fallos; ZIPs `unicentaopos_3.82_bin.zip` y `..._src.zip` generados. Correcciones publicadas en `1427922`. | Salida de Ant en host Linux |
+| 2026-11-27 | VM Windows 10: `ant -f build.xml clean test dist` OK en `C:\unicenta-build` (JDK 8u512 + Ant 1.10.14), **71 tests OK**; JAR de 2.406.292 bytes y plantilla copiados a `C:\unicenta`. | `\\192.168.122.1\compartidos\build_vendese_vm.log` y `build_vendese_vm.done=OK` |
+| 2026-11-27 | POS reiniciado en la VM: proceso `java.exe` con título `uniCenta oPOS - 3.82`. | `\\192.168.122.1\compartidos\checkpos.out` y `pos.log` |
+| 2026-11-27 | La VM no tiene impresoras (`PrintServiceLookup` → `DEFAULT=null`); la validación virtual se generó con iText desde el mismo `PreprintedInvoicePrintable`: 1 página de 594,99 × 934,87 pt, dos copias, columnas de exento/IVA 5 %/IVA 10 % y total en letras correctos. | `factura-preimpresa-preview.pdf` y `.png` en el compartido SMB; `pdftotext -layout` |
 
 ## Cierre
 
-Pendiente. Requiere aprobación del plan, documento de diseño con el formulario real, build/tests OK, evidencia en VM Windows 10 y sincronía documental. Todo avance debe registrarse aquí y en `docs/plans/ACTIVE.md`; los informes de validación se adjuntarán a este mismo plan.
+Pendiente solo por factores externos: (1) medir el formulario preimpreso real y ajustar `reports/invoice-template.properties` si difiere de la geometría Odoo/Provecchio; (2) autorización explícita para imprimir sobre papel preimpreso. Ya están cerrados código, plantilla, tests, build/tests en Linux y Windows 10, reinicio del POS en la VM y vista PDF virtual. Todo avance debe registrarse aquí y en `docs/plans/ACTIVE.md`.
