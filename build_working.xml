@@ -494,6 +494,11 @@
             <arg value="com.openbravo.pos.sales.ProductPricingTest"/>
             <arg value="com.openbravo.data.loader.DataWriteUtilsTest"/>
             <arg value="com.openbravo.data.loader.NormalBuilderTest"/>
+            <arg value="com.openbravo.pos.printer.invoice.InvoiceTemplateTest"/>
+            <arg value="com.openbravo.pos.printer.invoice.SpanishAmountToWordsTest"/>
+            <arg value="com.openbravo.pos.printer.invoice.InvoiceDataTest"/>
+            <arg value="com.openbravo.pos.printer.invoice.PreprintedInvoicePrintableTest"/>
+            <arg value="com.openbravo.pos.printer.invoice.InvoicePrintServiceTest"/>
         </java>
     </target>
 

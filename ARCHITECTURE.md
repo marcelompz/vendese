@@ -264,6 +264,7 @@ fiscalidad, scripting, impresión, JDBC indirecto y configuración.
   ESC/POS (Epson/Ithaca/TMU220/Star/SurePOS + `UnicodeTranslator*`), JavaPOS, fiscal, archivo/serie.
 - Visor con 5 animadores (flyer, scroll, blink, curtain, null) sobre `DeviceDisplayBase` (Timer 50 ms).
 - Cajón: ESC/POS y JavaPOS lo abren realmente; los demás hacen `beep()` y registran `DRAWEROPENED`.
+- **Factura preimpresa (opcional):** `printer/invoice/InvoicePrintService.java` imprime un `Printable` Java2D independiente de `DeviceTicket`, con coordenadas en mm desde `reports/invoice-template.properties` (override en `%USERPROFILE%`). Se activa con `machine.invoice.preprinted=true` y se dispara una sola vez desde `JPanelTicket.closeTicket()` para ventas normales, sin duplicar `Printer.Ticket`/`Ticket2`. El modelo `InvoiceData` toma cliente, líneas, impuestos agrupados y total de `TicketInfo`; no introduce dependencias ni cambios de esquema. Ver `docs/plans/impresion/`.
 
 ### 7.6 Reportes
 

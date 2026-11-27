@@ -156,6 +156,19 @@ La configuración se guarda en el archivo `unicentaopos.properties` dentro del d
 
 Guarde los cambios y cierre la ventana de configuración.
 
+### Factura preimpresa (opcional)
+
+Además del ticket térmico, `@vendese` puede imprimir una **factura sobre formulario preimpreso** con posiciones en milímetros. Está desactivada por defecto. Para habilitarla, agregue a `unicentaopos.properties`:
+
+```properties
+machine.invoice.preprinted=true
+machine.invoice.printername=(Default)
+```
+
+- Use `machine.invoice.printername` para elegir una impresora concreta (por ejemplo, `Microsoft Print to PDF` para validar sin gastar papel).
+- Las coordenadas viven en `reports/invoice-template.properties`. Copie ese archivo a `%USERPROFILE%\invoice-template.properties` y ajuste las claves en mm sin recompilar.
+- El diseño de referencia y el origen de cada dato están en [`docs/plans/impresion/diseno-factura-preimpresa-vendese.md`](docs/plans/impresion/diseno-factura-preimpresa-vendese.md). La alineación debe validarse contra el formulario físico antes de usar papel real.
+
 ---
 
 ## 5. Primer arranque y creación del esquema

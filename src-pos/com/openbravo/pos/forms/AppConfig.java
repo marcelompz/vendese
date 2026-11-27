@@ -260,6 +260,10 @@ public class AppConfig implements AppProperties {
         m_propsconfig.setProperty("machine.printer.4", "Not defined");
         m_propsconfig.setProperty("machine.printer.5", "Not defined");
         m_propsconfig.setProperty("machine.printer.6", "Not defined");
+
+        // Factura preimpresa: desactivada por defecto; el talonario sigue siendo el del ticket.
+        m_propsconfig.setProperty("machine.invoice.preprinted", "false");
+        m_propsconfig.setProperty("machine.invoice.printername", "(Default)");
                 
         m_propsconfig.setProperty("machine.display", "screen");
         m_propsconfig.setProperty("machine.scale", "Not defined");

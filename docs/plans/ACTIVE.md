@@ -3,7 +3,7 @@
 Índice de mejoras e iniciativas **no cerradas** para mantener el control de cambios y evitar solapamientos. Antes de iniciar trabajo no trivial, revisar este registro, [`AGENTS.md`](../../AGENTS.md) y [`IMPROVEMENT_PLAN.md`](../../IMPROVEMENT_PLAN.md).
 
 - **Regla normativa:** sección *"Planes de trabajo y ciclo de vida documental"* en [`AGENTS.md`](../../AGENTS.md).
-- **Última actualización:** 2026-11-27 (creación de `AGENTS.md` y registro `docs/plans/ACTIVE.md`; manual de instalación consolidado en `README.md`; nuevo plan `PLAN-impresion-factura-preimpresa-vendese-2026-11-27`).
+- **Última actualización:** 2026-11-27 (creación de `AGENTS.md` y registro `docs/plans/ACTIVE.md`; manual de instalación consolidado en `README.md`; plan `PLAN-impresion-factura-preimpresa-vendese-2026-11-27` en `en_progreso` con implementación y tests pendientes de ejecutar en VM).
 
 ---
 

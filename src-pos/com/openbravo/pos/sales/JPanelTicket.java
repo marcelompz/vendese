@@ -38,6 +38,7 @@ import com.openbravo.pos.payment.JPaymentSelectReceipt;
 import com.openbravo.pos.payment.JPaymentSelectRefund;
 import com.openbravo.pos.printer.TicketParser;
 import com.openbravo.pos.printer.TicketPrinterException;
+import com.openbravo.pos.printer.invoice.InvoicePrintService;
 import com.openbravo.pos.sales.restaurant.RestaurantDBUtils;
 import com.openbravo.pos.scale.ScaleException;
 import com.openbravo.pos.scripting.ScriptEngine;
@@ -106,6 +107,9 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         
     // private Template m_tempLine;
     private TicketParser m_TTP;
+
+    /** Impresión opcional de factura sobre formulario preimpreso. */
+    private InvoicePrintService invoicePrintService;
     
     /**
      *
@@ -244,7 +248,8 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         m_jPanelCentral.add(m_ticketlines, java.awt.BorderLayout.CENTER);
         
         m_TTP = new TicketParser(m_App.getDeviceTicket(), dlSystem);
-               
+        invoicePrintService = new InvoicePrintService(m_App.getProperties());
+
         // Los botones configurables...
         m_jbtnconfig = new JPanelButtons("Ticket.Buttons", this);
         m_jButtonsExt.add(m_jbtnconfig);           
@@ -1392,8 +1397,14 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
                             printTicket(paymentdialog.isPrintSelected() || warrantyPrint
                                     ? "Printer.Ticket"
 //                                    ? ticketPrintType
-                                    : "Printer.Ticket2", ticket, ticketext);  
-                            
+                                    : "Printer.Ticket2", ticket, ticketext);
+
+                            // Factura preimpresa: disparador único, configurable y
+                            // independiente del ticket térmico (Fase de impresión).
+                            if (ticket.getTicketType() == TicketInfo.RECEIPT_NORMAL) {
+                                invoicePrintService.printIfEnabled(ticket);
+                            }
+                             
 //                            if (m_oTicket.getLoyaltyCardNumber() != null){
 // add points to the card
 //                                System.out.println("Point added to card = " + ticket.getTotal()/100);
