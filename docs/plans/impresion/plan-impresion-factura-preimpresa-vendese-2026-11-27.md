@@ -5,7 +5,7 @@
 | id | PLAN-impresion-factura-preimpresa-vendese-2026-11-27 (id estable: se conserva si se amplía el alcance) |
 | titulo | Impresión de factura preimpresa en @vendese sobre formulario físico, con plantilla configurable en milímetros y validación en VM Windows 10 |
 | dominio | impresion (transversal: POS / ticket / reportes) |
-| estado | en_progreso (código, build/tests en Linux y Windows 10 y vista PDF virtual validados; pendiente de medir el formulario físico y de autorización para papel real) |
+| estado | entregado (código, 71 tests en Linux y Windows 10, PDF virtual y POS en VM validados; sin impresión en papel real por decisión del usuario) |
 | owner | Marcelo Pesallaccia (@marcelompz) |
 | version_objetivo | 3.83 (sin cambios de esquema previstos; si aparecen, upgrade 3.82 → 3.83 en los 5 motores) |
 | fecha | 2026-11-27 |
@@ -43,6 +43,10 @@ Que @vendese pueda imprimir una **factura sobre un formulario preimpreso** usand
 | ESC/POS | ❌ Descartado | Pensado para ticket térmico, no para formularios de hoja completa. |
 
 Se adopta `java.awt.print.PrinterJob` + `Printable`, dibujando con `Graphics2D` y convirtiendo cada coordenada con `mm * 72 / 25.4`. El render será un servicio nuevo, separado de `DeviceTicket` y de la cadena Velocity → `TicketParser`, pero reutilizando la base `javax.print`/`Printable` ya presente en `DevicePrinterPrinter` y `PrintableBasicTicket`, para no alterar la impresión de ticket existente.
+
+### Decisión de validación (2026-11-27)
+
+El usuario eligió **solo PDF virtual**. Queda prohibido imprimir sobre papel preimpreso real sin una autorización nueva y explícita. La VM Windows 10 no tiene impresoras instaladas, por lo que la vista virtual se generó con iText a partir del mismo `PreprintedInvoicePrintable` que usa `PrinterJob`; el archivo quedó en `\\192.168.122.1\compartidos\factura-preimpresa-preview.pdf`.
 
 ## Alcance / Fuera de alcance
 
@@ -101,7 +105,7 @@ Excluye: facturación electrónica, envío a organismos fiscales, timbrado/firma
 - [x] GPL v3, atribución a uniCenta oPOS / Jack Gerrard y a Marcelo Pesallaccia (@marcelompz) conservadas.
 - [x] Sin cambios de esquema (no aplica migración).
 
-El plan permanece `en_progreso` hasta que se mida el formulario físico y se autorice la prueba en papel; el cierre requiere decisión explícita registrada abajo.
+El plan se entrega con la validación autorizada (PDF virtual) y permanece abierto a un ajuste de coordenadas si el usuario aporta el formulario físico. Cualquier prueba en papel real requiere una autorización nueva registrada aquí.
 
 ## Seguimiento y evidencia
 
@@ -119,7 +123,8 @@ El plan permanece `en_progreso` hasta que se mida el formulario físico y se aut
 | 2026-11-27 | VM Windows 10: `ant -f build.xml clean test dist` OK en `C:\unicenta-build` (JDK 8u512 + Ant 1.10.14), **71 tests OK**; JAR de 2.406.292 bytes y plantilla copiados a `C:\unicenta`. | `\\192.168.122.1\compartidos\build_vendese_vm.log` y `build_vendese_vm.done=OK` |
 | 2026-11-27 | POS reiniciado en la VM: proceso `java.exe` con título `uniCenta oPOS - 3.82`. | `\\192.168.122.1\compartidos\checkpos.out` y `pos.log` |
 | 2026-11-27 | La VM no tiene impresoras (`PrintServiceLookup` → `DEFAULT=null`); la validación virtual se generó con iText desde el mismo `PreprintedInvoicePrintable`: 1 página de 594,99 × 934,87 pt, dos copias, columnas de exento/IVA 5 %/IVA 10 % y total en letras correctos. | `factura-preimpresa-preview.pdf` y `.png` en el compartido SMB; `pdftotext -layout` |
+| 2026-11-27 | Decisión del usuario: **solo PDF virtual**; no autoriza impresión sobre papel preimpreso real. | Respuesta registrada en esta sesión y en la sección «Decisión de validación» |
 
 ## Cierre
 
-Pendiente solo por factores externos: (1) medir el formulario preimpreso real y ajustar `reports/invoice-template.properties` si difiere de la geometría Odoo/Provecchio; (2) autorización explícita para imprimir sobre papel preimpreso. Ya están cerrados código, plantilla, tests, build/tests en Linux y Windows 10, reinicio del POS en la VM y vista PDF virtual. Todo avance debe registrarse aquí y en `docs/plans/ACTIVE.md`.
+Entregado con el alcance autorizado: código, plantilla, 71 tests, `ant -f build.xml clean test dist` en Linux y Windows 10, JAR desplegado en `C:\unicenta`, POS reiniciado y vista PDF virtual revisada. **No se imprimió papel preimpreso**: el usuario eligió «Solo PDF virtual». Si se aporta el formulario físico, se ajustarán las coordenadas en `reports/invoice-template.properties` y se registrará aquí; para papel real hace falta una autorización nueva. Todo avance debe registrarse aquí y en `docs/plans/ACTIVE.md`.
