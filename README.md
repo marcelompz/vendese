@@ -1,6 +1,6 @@
 # @vendese
 
-Fork of **uniCenta oPOS**.
+Fork of **uniCenta oPOS** by Marcelo Pesallaccia (@marcelompz).
 
 Original project: uniCenta oPOS by Jack Gerrard (uniCenta) — http://www.unicenta.com  
 Upstream community: http://www.sourceforge.net/projects/unicentaopos
@@ -103,4 +103,7 @@ support@unicenta.com
 Jack Gerrard
 Founder, uniCenta (proyecto original)
 
-@vendese — fork de uniCenta oPOS: https://github.com/marcelompz/vendese
+Marcelo Pesallaccia (@marcelompz)
+Fork author / maintainer, @vendese — https://github.com/marcelompz/vendese
+
+Based on uniCenta oPOS by Jack Gerrard
