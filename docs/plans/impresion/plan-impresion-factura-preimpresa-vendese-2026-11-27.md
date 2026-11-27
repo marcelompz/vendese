@@ -124,6 +124,34 @@ El plan se entrega con la validación autorizada (PDF virtual) y permanece abier
 | 2026-11-27 | POS reiniciado en la VM: proceso `java.exe` con título `uniCenta oPOS - 3.82`. | `\\192.168.122.1\compartidos\checkpos.out` y `pos.log` |
 | 2026-11-27 | La VM no tiene impresoras (`PrintServiceLookup` → `DEFAULT=null`); la validación virtual se generó con iText desde el mismo `PreprintedInvoicePrintable`: 1 página de 594,99 × 934,87 pt, dos copias, columnas de exento/IVA 5 %/IVA 10 % y total en letras correctos. | `factura-preimpresa-preview.pdf` y `.png` en el compartido SMB; `pdftotext -layout` |
 | 2026-11-27 | Decisión del usuario: **solo PDF virtual**; no autoriza impresión sobre papel preimpreso real. | Respuesta registrada en esta sesión y en la sección «Decisión de validación» |
+| 2026-11-27 | Solicitud posterior del usuario: instalar impresora PDF en la VM, activar la factura preimpresa y versionar la evidencia. Procedimiento documentado; verificación de privilegios en curso. | Sección «Habilitación de impresora PDF en la VM» y `check_admin.bat` en el compartido SMB |
+
+## Habilitación de impresora PDF en la VM (solicitud posterior del usuario)
+
+| Campo | Valor |
+| :--- | :--- |
+| Fecha | 2026-11-27 |
+| Solicitud | Instalar *Microsoft Print to PDF* en la VM Windows 10, activar la factura preimpresa y actualizar el repositorio con la evidencia. |
+| Estado | **en curso** — verificación de privilegios administrativos y de la característica de impresión PDF en ejecución. |
+| Restricción vigente | Sigue prohibida la impresión sobre papel preimpreso real sin autorización nueva y explícita. Solo se permite PDF virtual. |
+
+Procedimiento previsto, registrado para reproducibilidad:
+
+1. Verificar que el usuario `Marcelo` pertenece a `Administradores` y consultar el estado de `Printing-PrintToPDFServices-Features` con `dism /online /get-featureinfo`.
+2. Habilitar la característica:
+   ```cmd
+   dism /online /enable-feature /featurename:Printing-PrintToPDFServices-Features /all /norestart
+   ```
+3. Verificar el servicio de impresión con `PrintProbe` (`javax.print.PrintServiceLookup`) y confirmar que aparece `Microsoft Print To PDF`.
+4. Activar la factura en `%USERPROFILE%\unicentaopos.properties`:
+   ```properties
+   machine.invoice.preprinted=true
+   machine.invoice.printername=Microsoft Print To PDF
+   ```
+5. Reiniciar el POS y dejar la VM lista para que el usuario realice la prueba.
+6. Registrar la evidencia en la tabla de seguimiento, sincronizar `docs/plans/ACTIVE.md` y publicar en `origin/main`.
+
+El resultado de los pasos 1–5 se completará en la tabla de seguimiento y en el cierre en cuanto finalice la comprobación en curso.
 
 ## Cierre
 
