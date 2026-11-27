@@ -1,0 +1,56 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 8
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '8'
+
+      - name: Install Ant
+        run: sudo apt-get update && sudo apt-get install -y ant
+
+      - name: Build, test and package
+        run: ant -f build.xml clean test dist
+
+      - name: Upload distribution
+        uses: actions/upload-artifact@v4
+        with:
+          name: unicenta-dist
+          path: build/dist/*.zip
+
+  installer-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 8
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '8'
+
+      - name: Install Ant and Inno Setup
+        run: choco install ant innosetup -y --no-progress
+
+      - name: Build Windows installer
+        run: ant -f build.xml installer.windows -Dinnosetup="C:\Program Files (x86)\Inno Setup 6"
+
+      - name: Upload installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: unicenta-installer
+          path: build/dist/*setup.exe

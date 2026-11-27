@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Build principal del proyecto.
+
+    El build.xml original era una plantilla de NetBeans que importaba
+    nbproject/build-impl.xml, carpeta que no existe en este repositorio.
+    El build real (Ant clásico) está en build_working.xml: compila los tres
+    módulos, genera el JAR y la distribución, y ejecuta las pruebas JUnit.
+-->
+<project name="unicentaopos" basedir="." default="dist">
+    <description>Builds, tests and runs uniCenta oPOS.</description>
+    <import file="build_working.xml"/>
+</project>
