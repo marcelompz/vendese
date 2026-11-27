@@ -72,7 +72,7 @@ machine.invoice.preprinted=true
 machine.invoice.printername=(Default)
 ```
 
-Con `false` (valor por defecto) el POS sigue imprimiendo solo `Printer.Ticket`/`Ticket2`. Para validar en PDF virtual, seleccionar "Microsoft Print to PDF" en `machine.invoice.printername`.
+Con `false` (valor por defecto) el POS sigue imprimiendo solo `Printer.Ticket`/`Ticket2`. Para validar en PDF virtual, seleccionar `PDFCreator` en `machine.invoice.printername` (verificado en la VM Windows 10; *Microsoft Print to PDF* no está disponible en esa imagen).
 
 ## 6. Validación pendiente
 

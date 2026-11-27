@@ -1,0 +1,183 @@
+{
+  "esquema": "1.0",
+  "proyecto": "@vendese",
+  "repositorio": "https://github.com/marcelompz/vendese",
+  "actualizado": "2026-11-27",
+  "criterio_versionamiento": {
+    "formato": "MAYOR.FEATURE.PATCH",
+    "linea_base": "3.82.0",
+    "version_runtime_actual": "3.82",
+    "reglas": [
+      {
+        "componente": "MAYOR",
+        "descripcion": "Primer dígito: cambios incompatibles de arquitectura o de API de datos. Reservado en 3."
+      },
+      {
+        "componente": "FEATURE",
+        "descripcion": "Segundo dígito: nueva funcionalidad relevante o cambio mayor funcional; al incrementarse, PATCH vuelve a 0. Ejemplo: 3.82.0 -> 3.83.0."
+      },
+      {
+        "componente": "PATCH",
+        "descripcion": "Tercer dígito: mejoras o correcciones dentro de la misma línea de feature. Ejemplo: 3.83.0 -> 3.83.1."
+      }
+    ],
+    "nota": "Las versiones registradas son el registro de entrega/planificación; no cambian AppLocal.APP_VERSION hasta un release autorizado. Las versiones marcadas como reservadas no tienen fecha de entrega comprometida."
+  },
+  "features": [
+    {
+      "version": "3.82.0",
+      "estado": "entregado",
+      "fecha": "histórico",
+      "dominio": "seguridad / build",
+      "id_plan": "PLAN-MEJORA-FASES-0-3",
+      "ruta_plan": "docs/plans/IMPROVEMENT_PLAN.md",
+      "titulo": "Línea base heredada de uniCenta oPOS",
+      "descripcion": "Versión inicial del fork documentada con tres componentes: build Ant unificado y CI, fases 0-3 de seguridad (PBKDF2, AES-GCM v2, RMI en loopback con token, validación de scripts y db.driverlib), suite JUnit y precios por cantidad.",
+      "cambios": [
+        "Compilación unificada de src-beans, src-data y src-pos con target test y CI.",
+        "Hash PBKDF2-HMAC-SHA256 con lectura de formatos legacy.",
+        "Secretos crypt: con AES-128-GCM v2 y clave local ~/.unicentaopos.key.",
+        "Instancia RMI limitada a 127.0.0.1 con InstanceToken.",
+        "ScriptSecurity y BeanNameValidator para scripts BeanShell.",
+        "Tabla PRODUCTS_PRICEBREAKS en los 5 motores y upgrade 3.81 -> 3.82."
+      ],
+      "evidencia": [
+        "Fases 0-3 verificadas en docs/plans/IMPROVEMENT_PLAN.md",
+        "Artefactos unicentaopos_3.82_bin.zip y unicentaopos_3.82_src.zip"
+      ]
+    },
+    {
+      "version": "3.83.0",
+      "estado": "entregado",
+      "fecha": "2026-11-27",
+      "dominio": "impresion (POS / ticket / reportes)",
+      "id_plan": "PLAN-impresion-factura-preimpresa-vendese-2026-11-27",
+      "ruta_plan": "docs/plans/impresion/plan-impresion-factura-preimpresa-vendese-2026-11-27.md",
+      "titulo": "Impresión de factura preimpresa",
+      "descripcion": "Nueva línea de feature: render de factura sobre formulario preimpreso con Java2D y PrinterJob, coordenadas en milímetros, dos copias, plantilla invoice-template.properties ajustable sin recompilar y un único disparador en el cierre de venta. No sustituye al ticket térmico y no cambia el esquema SQL.",
+      "cambios": [
+        "Servicio InvoicePrintService y Printable PreprintedInvoicePrintable con conversión mm a puntos.",
+        "Modelo InvoiceData, agrupación de impuestos y total en letras en es_ES.",
+        "Plantilla reports/invoice-template.properties con override en %USERPROFILE%.",
+        "Hook único en JPanelTicket.closeTicket() controlado por machine.invoice.preprinted.",
+        "5 suites JUnit nuevas registradas en build_working.xml (71 tests en total)."
+      ],
+      "evidencia": [
+        "ant -f build.xml clean test dist OK en JDK 8/Linux y en VM Windows 10: 71 tests, 0 fallos",
+        "PDF virtual generado desde el mismo Printable y revisado en la VM",
+        "Sin papel real por decisión del usuario"
+      ]
+    },
+    {
+      "version": "3.83.1",
+      "estado": "entregado",
+      "fecha": "2026-11-27",
+      "dominio": "impresion (VM / configuración)",
+      "id_plan": "PLAN-ajuste-impresion-factura-pdf-vm-2026-11-27",
+      "ruta_plan": "docs/plans/impresion/plan-ajuste-impresion-factura-pdf-vm-2026-11-27.md",
+      "titulo": "Ajustes a la factura preimpresa: impresora PDF en VM",
+      "descripcion": "Mejora dentro de la línea 3.83: Microsoft Print to PDF no existe en la imagen de Windows 10, por lo que se instaló PDFCreator 6.3.1 (GPL v3) como impresora PDF del sistema. Activación de la factura por propiedades, PDF generado desde PrinterJob (no desde un render auxiliar) y evidencia versionada. Coordenadas sin cambios: no hay formulario físico medido.",
+      "cambios": [
+        "Instalar PDFCreator 6.3.1 con /VerySilent y verificar PrintServiceLookup en la VM (DEFAULT=Win32 Printer : PDFCreator).",
+        "Activar machine.invoice.preprinted=true y machine.invoice.printername=PDFCreator en unicentaopos.properties.",
+        "Reiniciar el POS con el título uniCenta oPOS - 3.82 y generar el PDF desde el PrinterJob de producción (PRINT_OK=true).",
+        "Archivar factura-preimpresa-printerjob.pdf y sincronizar ROADMAP.md, featurelist.json, ACTIVE.md y AGENTS.md."
+      ],
+      "evidencia": [
+        "wmic printer get name,drivername -> PDFCreator  PDFCreator; PrintProbe -> DEFAULT=Win32 Printer : PDFCreator, SERVICE=PDFCreator",
+        "printjob.log -> PRINT_OK=true (InvoicePrintService.print desde C:\\unicenta\\unicentaopos.jar)",
+        "factura-preimpresa-printerjob.pdf: 1 pagina, dos copias, total 10.254 y total en letras (pdftotext -layout)",
+        "checkpos.out: java.exe con titulo uniCenta oPOS - 3.82; sin papel real"
+      ],
+      "notas": "Sigue prohibida la impresión sobre papel preimpreso real sin autorización nueva y explícita. Sin cambios de esquema: no corresponde script *-upgrade-*.sql para este PATCH."
+    },
+    {
+      "version": "3.84.0",
+      "estado": "borrador",
+      "fecha": "2026-11-27",
+      "dominio": "infra",
+      "id_plan": "PLAN-INFRA-UPGRADE-RUNTIME-BD",
+      "ruta_plan": "docs/plans/PLAN-INFRA-UPGRADE-RUNTIME-BD/PLAN-INFRA-UPGRADE-RUNTIME-BD.md",
+      "titulo": "Runtime Java 17/21 LTS y BD modernas",
+      "descripcion": "Versión reservada para modernizar el stack de ejecución y persistencia: Java 17/21 LTS, drivers JDBC compatibles con MariaDB 10.11+/11.x y PostgreSQL 15+ con scram-sha-256, dialectos SQL y scripts de arranque. Requiere revisar la invariante source/target 1.7.",
+      "cambios": [
+        "Auditoría de build y flags JVM bajo JDK 17/21.",
+        "Actualización de drivers JDBC y validación de db.driverlib.",
+        "Verificación de dialectos en MariaDB y PostgreSQL modernos.",
+        "Tests de conexión y compatibilidad de esquema."
+      ],
+      "evidencia": [],
+      "notas": "Sin implementación: no altera la compatibilidad Java 7 actual hasta que se apruebe y se publique."
+    },
+    {
+      "version": "3.85.0",
+      "estado": "en_progreso",
+      "fecha": "2026-11-27",
+      "dominio": "arquitectura / calidad",
+      "id_plan": "PLAN-MEJORA-FASE-4-CALIDAD",
+      "ruta_plan": "docs/plans/IMPROVEMENT_PLAN.md",
+      "titulo": "Calidad y refactorización incremental (Fase 4)",
+      "descripcion": "Versión reservada para dividir JPanelTicket, JPanelConfigPeripheral y DataLogicSales, completar el uso de SwingWorker en Jasper/CSV, reducir duplicación y tipos raw, y elevar la cobertura de tests.",
+      "cambios": [
+        "División incremental de God classes sin reescritura masiva.",
+        "Ejecución asíncrona de reportes Jasper y exportación CSV.",
+        "Eliminación de duplicados y tipos raw; la cobertura crece con tests JUnit."
+      ],
+      "evidencia": [],
+      "notas": "Trabajo incremental previo a esta numeración; ver IMPROVEMENT_PLAN.md Fase 4."
+    },
+    {
+      "version": "3.86.0",
+      "estado": "en_progreso",
+      "fecha": "2026-11-27",
+      "dominio": "datos",
+      "id_plan": "PLAN-MEJORA-FASE-5-DATOS",
+      "ruta_plan": "docs/plans/IMPROVEMENT_PLAN.md",
+      "titulo": "Parametrización de SQL y endurecimiento de esquema (Fase 5)",
+      "descripcion": "Versión reservada para parametrizar QBFBuilder/NormalBuilder, eliminar el SQL concatenado residual, añadir constraints/pool y evaluar migraciones versionadas respetando los 5 motores.",
+      "cambios": [
+        "28 sentencias PreparedSentence ya implementadas.",
+        "Parametrización pendiente de QBFBuilder y NormalBuilder.",
+        "Restricciones, pool de conexiones y migraciones versionadas por evaluar."
+      ],
+      "evidencia": [
+        "28 sentencias PreparedSentence verificadas en el repositorio"
+      ],
+      "notas": "Cualquier cambio de esquema debe aplicarse en los 5 *-create.sql y en los scripts incrementales."
+    },
+    {
+      "version": "3.87.0",
+      "estado": "borrador",
+      "fecha": "2026-11-27",
+      "dominio": "saas / datos",
+      "id_plan": "PLAN-SAAS-POSTGRESQL",
+      "ruta_plan": null,
+      "titulo": "SaaS sobre PostgreSQL",
+      "descripcion": "Versión reservada (por definir) para preparar @vendese y el backend asociado: driver JDBC con scram-sha-256, revisión de SessionDBPostgreSQL, aislamiento multi-tenant y empaquetado de servidor.",
+      "cambios": [
+        "Driver JDBC compatible con autenticación scram-sha-256.",
+        "Aislamiento multi-tenant y empaquetado de servidor."
+      ],
+      "evidencia": [],
+      "notas": "Plan detallado pendiente de crear en docs/plans/saas/."
+    }
+  ],
+  "documentacion_proceso": [
+    {
+      "id_plan": "PLAN-versionamiento-roadmap-featurelist-2026-11-27",
+      "estado": "entregado",
+      "fecha": "2026-11-27",
+      "ruta_plan": "docs/plans/infra/plan-versionamiento-roadmap-featurelist-2026-11-27.md",
+      "descripcion": "Define el criterio MAYOR.FEATURE.PATCH, crea ROADMAP.md y featurelist.json y los vincula con AGENTS.md y docs/plans/ACTIVE.md. No implica cambio de versión en el código.",
+      "archivos": [
+        "ROADMAP.md",
+        "featurelist.json",
+        "AGENTS.md",
+        "docs/plans/ACTIVE.md"
+      ],
+      "evidencia": [
+        "Documentos creados/actualizados y publicados en origin/main en el commit de cierre del plan"
+      ]
+    }
+  ]
+}

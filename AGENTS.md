@@ -1,6 +1,6 @@
 # AGENTS.md — @vendese
 
-> Protocolo operativo compacto para agentes y colaboradores. Antes de cambios no triviales, lee [`ARCHITECTURE.md`](ARCHITECTURE.md) (mapa completo del código) e [`IMPROVEMENT_PLAN.md`](IMPROVEMENT_PLAN.md) (fases previas 0–5).
+> Protocolo operativo compacto para agentes y colaboradores. Antes de cambios no triviales, lee [`ARCHITECTURE.md`](ARCHITECTURE.md) (mapa completo del código) e [`IMPROVEMENT_PLAN.md`](docs/plans/IMPROVEMENT_PLAN.md) (fases previas 0–5).
 > **@vendese** = marca/fork público ([`marcelompz/vendese`](https://github.com/marcelompz/vendese), licencia GPL v3 en [`LICENSE.md`](LICENSE.md)). Internamente el código conserva los paquetes `com.openbravo.*` e identificador `unicentaopos` (`AppLocal.APP_ID`).
 
 ## Stack y estructura (Java + Apache Ant)
@@ -60,21 +60,34 @@ ant -f build.xml release
 4. **Idioma por defecto (`es_ES`):** `AppConfig.loadDefault()` y `StartPOS.ensureDefaultSpanish()` fijan español; si agregas textos de UI o reportes, actualiza también los bundles `*_es.properties`.
 5. **Licencia y atribuciones:** conservar cabeceras GPL v3, [`LICENSE.md`](LICENSE.md) y la atribución del proyecto original (uniCenta oPOS / Jack Gerrard) y del fork (`@marcelompz`).
 
+## Criterio de versionamiento y hoja de ruta
+
+- **Formato:** `MAYOR.FEATURE.PATCH` (`3.<línea de feature>.<ajuste>`). La línea base heredada `3.82` se documenta como **`3.82.0`**.
+- **Reglas:**
+  - `MAYOR` (primer dígito): solo cambios incompatibles de arquitectura o API de datos; hoy `3` (pasaría a `4.0.0`).
+  - `FEATURE` (segundo dígito): nueva funcionalidad relevante o «cambio mayor funcional»; al subir, el `PATCH` vuelve a `0` (`3.82.0 → 3.83.0`, impresión de factura preimpresa).
+  - `PATCH` (tercer dígito): mejoras o correcciones dentro de la misma línea de feature (`3.83.0 → 3.83.1`, ajustes de esa impresión en la VM).
+- **Resumen (detalle en `ROADMAP.md`):** `3.82.0` base heredada; `3.83.0` factura preimpresa (entregada); `3.83.1` ajustes en VM (entregados: `PDFCreator` en la VM y PDF desde `PrinterJob`); `3.84.0` runtime/BD (borrador); `3.85.0` Fase 4 calidad; `3.86.0` Fase 5 datos; `3.87.0` SaaS PostgreSQL (por definir).
+- **Fuentes de verdad:** [`ROADMAP.md`](ROADMAP.md) y [`featurelist.json`](featurelist.json). Toda versión nueva se añade en ambos con la misma descripción, estado, fecha y plan de origen, y se refleja en [`docs/plans/ACTIVE.md`](docs/plans/ACTIVE.md) y en el `versión objetivo` del plan correspondiente.
+- **No confundir:** en este proyecto «cambio mayor» es el salto de `FEATURE`, no un `MAJOR` semver. Las versiones reservadas del roadmap no cambian el código: `AppLocal.APP_VERSION` sigue en `3.82` hasta un release autorizado.
+- **Proceso:** [`PLAN-versionamiento-roadmap-featurelist-2026-11-27`](docs/plans/infra/plan-versionamiento-roadmap-featurelist-2026-11-27.md).
+
 ## Sincronización de versión (obligatoria en releases)
 
-Al preparar una nueva versión (`3.82` → `3.83`, etc.), actualizar **todos** estos puntos en el mismo cambio:
+Al preparar una nueva versión (`3.82.0` → `3.83.0`, o un ajuste `3.83.0` → `3.83.1`), actualizar **todos** estos puntos en el mismo cambio:
 1. `AppLocal.APP_VERSION` en `src-pos/com/openbravo/pos/forms/AppLocal.java`.
 2. `<property name="version" value="..."/>` en `build_working.xml`.
 3. `#define MyAppVersion "..."` en `installer/unicentaopos.iss`.
-4. Scripts `*-upgrade-<version_anterior>.sql` si hubo cambios de base de datos (`JRootApp` compara `APPLICATIONS.VERSION` con `APP_VERSION`).
+4. Scripts `*-upgrade-<version_anterior>.sql` si hubo cambios de base de datos (`JRootApp` compara `APPLICATIONS.VERSION` con `APP_VERSION`). Para `3.83.0` el script heredado es `*-upgrade-3.82.sql`; un `PATCH` sin cambios de esquema no añade script.
 5. Referencias de versión en [`README.md`](README.md) (y [`ARCHITECTURE.md`](ARCHITECTURE.md) si cambia arquitectura o conteo de tests).
+6. [`ROADMAP.md`](ROADMAP.md), [`featurelist.json`](featurelist.json) y [`docs/plans/ACTIVE.md`](docs/plans/ACTIVE.md): estado, fecha y evidencia de la versión, además del plan de origen.
 
 ## Planes de trabajo y ciclo de vida documental
 
-- **Antes de iniciar trabajo no trivial:** revisar [`docs/plans/ACTIVE.md`](docs/plans/ACTIVE.md) e [`IMPROVEMENT_PLAN.md`](IMPROVEMENT_PLAN.md) para evitar duplicaciones o solapamientos.
-- **Planificar cada mejora:** crear un plan en `docs/plans/<dominio>/` (por ejemplo `pos/`, `datos/`, `saas/`, `infra/`, `ui/`) con metadatos mínimos (`id`, `dominio`, `estado`, `versión objetivo`, `fecha`), objetivo, alcance, pasos, criterios de aceptación (DoD) y sección de evidencia.
+- **Antes de iniciar trabajo no trivial:** revisar [`docs/plans/ACTIVE.md`](docs/plans/ACTIVE.md), [`IMPROVEMENT_PLAN.md`](docs/plans/IMPROVEMENT_PLAN.md) y [`ROADMAP.md`](ROADMAP.md) para evitar duplicaciones o solapamientos.
+- **Planificar cada mejora:** crear un plan en `docs/plans/<dominio>/` (por ejemplo `pos/`, `datos/`, `saas/`, `infra/`, `ui/`) con metadatos mínimos (`id`, `dominio`, `estado`, `versión objetivo`, `fecha`), objetivo, alcance, pasos, criterios de aceptación (DoD) y sección de evidencia. La `versión objetivo` usa tres componentes (`3.83.0`, `3.83.1`) y debe figurar también en `ROADMAP.md` y `featurelist.json`.
 - **Estados permitidos:** `borrador → propuesto → aprobado → en_progreso → entregado → cerrado` (o `supersedido` / `archivado`). Mientras no esté cerrado, debe figurar en [`docs/plans/ACTIVE.md`](docs/plans/ACTIVE.md).
-- **Cierre obligatorio sincronizado:** solo marcar como `cerrado` cuando se cumpla el DoD, pasen los tests (`ant -f build.xml clean test dist`), exista evidencia vinculada (commits/tests/validaciones) y estén sincronizados `docs/plans/ACTIVE.md` y `README.md`/`ARCHITECTURE.md` si aplica.
+- **Cierre obligatorio sincronizado:** solo marcar como `cerrado` cuando se cumpla el DoD, pasen los tests (`ant -f build.xml clean test dist`), exista evidencia vinculada (commits/tests/validaciones) y estén sincronizados `docs/plans/ACTIVE.md`, `ROADMAP.md`/`featurelist.json` y `README.md`/`ARCHITECTURE.md` si aplica.
 
 ## Flujo de ramas y cambios
 

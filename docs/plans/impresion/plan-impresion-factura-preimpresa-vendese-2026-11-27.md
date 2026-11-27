@@ -7,13 +7,13 @@
 | dominio | impresion (transversal: POS / ticket / reportes) |
 | estado | entregado (código, 71 tests en Linux y Windows 10, PDF virtual y POS en VM validados; sin impresión en papel real por decisión del usuario) |
 | owner | Marcelo Pesallaccia (@marcelompz) |
-| version_objetivo | 3.83 (sin cambios de esquema previstos; si aparecen, upgrade 3.82 → 3.83 en los 5 motores) |
+| version_objetivo | 3.83.0 (criterio `MAYOR.FEATURE.PATCH`; sin cambios de esquema previstos; si aparecen, upgrade 3.82 → 3.83.0 en los 5 motores). Los ajustes posteriores de esta misma feature se registran como 3.83.1 en el plan [`PLAN-ajuste-impresion-factura-pdf-vm-2026-11-27`](plan-ajuste-impresion-factura-pdf-vm-2026-11-27.md). |
 | fecha | 2026-11-27 |
 | alcance | Diseñar e implementar un render de factura para **formulario preimpreso** independiente del ticket térmico: datos de venta, agrupación de impuestos, dos copias con desplazamiento en mm y plantilla `invoice-template.properties` ajustable sin recompilar. **Excluye:** facturación electrónica, timbrado/firmas, rediseño del talonario, reportes Jasper nuevos, ESC/POS térmico, cambios de esquema sin autorización y pruebas sobre papel real sin autorización. |
 | dependencias | Mantener GPL v3 (`LICENSE.md`) y atribución a uniCenta oPOS / Jack Gerrard y a Marcelo Pesallaccia. Compatibilidad Java 7 (`source/target 1.7`) y build Ant. Medir el formulario preimpreso real antes de fijar coordenadas. Definir el origen de RUC/dirección/teléfono del cliente sin tocar el esquema en la primera entrega. Para la validación: flujo commit/push → `git archive HEAD` → compartido SMB → VM Windows 10 con JDK 8 y Ant en `C:\tools`. Referencia de estructura y decisiones: plan `PLAN-impresion-factura-preimpresa-w7-2026-11-26` del proyecto `supermarket_system`. |
 | riesgos | La impresión actual de @vendese está orientada a ticket (Velocity + `TicketParser`) y a reportes Jasper con *bands*, difícil de alinear sobre papel preimpreso. Los importes y tasas de impuestos viven en el ticket y en `TAXES`; agruparlos en memoria evita migraciones, pero puede diferir de la convención del formulario si éste muestra subtotales con IVA incluido. La fuente y el tamaño de letra disponibles en Windows pueden desplazar el texto. Mitigación: coordenadas en mm convertidas a puntos, plantilla externa sobre `%USERPROFILE%`, validación previa en PDF virtual y un único disparador de impresión. |
 | dod | Ver sección *Definition of Done*. Incluye build/tests Ant, plantilla ajustable sin recompilar, dos copias alineadas, sin impresión duplicada, evidencia en VM Windows 10 y sincronía de `README.md`, `ARCHITECTURE.md` y `docs/plans/ACTIVE.md` si aplica. |
-| evidencia | Revisión de `ARCHITECTURE.md` §7.2/§7.5/§7.6, `IMPROVEMENT_PLAN.md`, `build_working.xml`, mapeo directo de `printer/`, `sales/JPanelTicket.java`, `AppConfig`, `JPanelConfigPeripheral` y `*-create.sql`, y del plan de referencia de `supermarket_system`. Implementación: `printer/invoice/*`, `reports/invoice-template.properties`, hook en `JPanelTicket`, defaults en `AppConfig`, 5 suites nuevas y documentación de diseño. Pendiente: build/tests y evidencia en VM. |
+| evidencia | Revisión de `ARCHITECTURE.md` §7.2/§7.5/§7.6, `IMPROVEMENT_PLAN.md`, `build_working.xml`, mapeo directo de `printer/`, `sales/JPanelTicket.java`, `AppConfig`, `JPanelConfigPeripheral` y `*-create.sql`, y del plan de referencia de `supermarket_system`. Implementación: `printer/invoice/*`, `reports/invoice-template.properties`, hook en `JPanelTicket`, defaults en `AppConfig`, 5 suites nuevas y documentación de diseño. Build/tests OK en Linux y VM, PDFCreator 6.3.1 instalado en la VM y PDF generado desde el `PrinterJob` de producción (detalle en el plan de ajuste `3.83.1`). |
 
 ## Objetivo
 
@@ -46,7 +46,7 @@ Se adopta `java.awt.print.PrinterJob` + `Printable`, dibujando con `Graphics2D` 
 
 ### Decisión de validación (2026-11-27)
 
-El usuario eligió **solo PDF virtual**. Queda prohibido imprimir sobre papel preimpreso real sin una autorización nueva y explícita. La VM Windows 10 no tiene impresoras instaladas, por lo que la vista virtual se generó con iText a partir del mismo `PreprintedInvoicePrintable` que usa `PrinterJob`; el archivo quedó en `\\192.168.122.1\compartidos\factura-preimpresa-preview.pdf`.
+El usuario eligió **solo PDF virtual**. Queda prohibido imprimir sobre papel preimpreso real sin una autorización nueva y explícita. Inicialmente la VM Windows 10 no tenía impresoras, por lo que la primera vista se generó con iText desde el mismo `PreprintedInvoicePrintable` (`\\192.168.122.1\compartidos\factura-preimpresa-preview.pdf`). Posteriormente se instaló **PDFCreator 6.3.1** como impresora PDF del sistema y se generó el PDF definitivo desde el `PrinterJob` de producción (`factura-preimpresa-printerjob.pdf`); ambos pasos quedan registrados en el plan de ajuste `3.83.1`.
 
 ## Alcance / Fuera de alcance
 
@@ -79,10 +79,10 @@ Excluye: facturación electrónica, envío a organismos fiscales, timbrado/firma
 6. [x] Crear `invoice-template.properties` con claves de página, fuente, campos, detalle, totales, impuestos y offset de copia; override desde `%USERPROFILE%` sin recompilar.
 7. [x] Enlazar la impresión en un único punto de `JPanelTicket.closeTicket()` (1336-1433), con `machine.invoice.preprinted` y `machine.invoice.printername` registrados en `AppConfig.loadDefault()`, sin duplicar `Printer.Ticket`/`Ticket2`.
 8. [x] Añadir 5 suites JUnit 4 de impresión y registrarlas en el target `test` de `build_working.xml` con `<arg value="..."/>`.
-9. [ ] Ejecutar `ant -f build.xml clean test dist` y verificar el JAR en `build/jar/unicentaopos.jar`.
-10. [ ] Validar en VM Windows 10: commit/push → `git archive HEAD` al compartido SMB → compilación Ant → copiar JAR → reiniciar POS → verificar título `uniCenta oPOS - 3.82` → imprimir primero en PDF virtual y comparar posiciones (±0,5 mm).
-11. [ ] Solo con autorización registrada aquí, imprimir sobre papel preimpreso en la VM; adjuntar evidencia.
-12. [ ] Sincronizar documentación y cerrar el plan cuando se cumpla el DoD.
+9. [x] Ejecutar `ant -f build.xml clean test dist` y verificar el JAR en `build/jar/unicentaopos.jar` (71 tests OK en Linux y en la VM).
+10. [x] Validar en VM Windows 10: `git archive HEAD` al compartido SMB → compilación Ant → copiar JAR y plantilla a `C:\unicenta` → reiniciar POS → verificar título `uniCenta oPOS - 3.82` → generar el PDF desde el `PrinterJob` de producción y revisar posiciones en el PDF virtual (sin formulario físico medido, no se aplica la tolerancia de ±0,5 mm sobre papel).
+11. [ ] Solo con autorización registrada aquí, imprimir sobre papel preimpreso en la VM; adjuntar evidencia. **Pendiente: el usuario no la ha autorizado.**
+12. [x] Sincronizar documentación (`ACTIVE.md`, `ROADMAP.md`, `featurelist.json`, `AGENTS.md`) y publicar en `origin/main`.
 
 ## Validación
 
@@ -100,7 +100,7 @@ Excluye: facturación electrónica, envío a organismos fiscales, timbrado/firma
 - [x] Plantilla en mm con override en `%USERPROFILE%` (verificación en runtime pendiente).
 - [x] Dos copias y un único disparador de impresión; sin duplicar el ticket térmico.
 - [x] `ant -f build.xml clean test dist` OK en JDK 8/Linux y, de nuevo, en VM Windows 10 (71 tests, 0 fallos en ambos); suites registradas en `build_working.xml`.
-- [x] Evidencia de build/tests y de la validación en VM Windows 10; PDF virtual generado desde el mismo `Printable` con iText (la VM no tiene impresoras instaladas). Papel real pendiente de autorización.
+- [x] Evidencia de build/tests y de la validación en VM Windows 10; primero un PDF virtual generado con iText desde el mismo `Printable` y, tras instalar PDFCreator 6.3.1, el PDF definitivo desde el `PrinterJob` de producción. Papel real pendiente de autorización.
 - [x] `README.md`, `ARCHITECTURE.md` y `docs/plans/ACTIVE.md` sincronizados.
 - [x] GPL v3, atribución a uniCenta oPOS / Jack Gerrard y a Marcelo Pesallaccia (@marcelompz) conservadas.
 - [x] Sin cambios de esquema (no aplica migración).
@@ -124,35 +124,39 @@ El plan se entrega con la validación autorizada (PDF virtual) y permanece abier
 | 2026-11-27 | POS reiniciado en la VM: proceso `java.exe` con título `uniCenta oPOS - 3.82`. | `\\192.168.122.1\compartidos\checkpos.out` y `pos.log` |
 | 2026-11-27 | La VM no tiene impresoras (`PrintServiceLookup` → `DEFAULT=null`); la validación virtual se generó con iText desde el mismo `PreprintedInvoicePrintable`: 1 página de 594,99 × 934,87 pt, dos copias, columnas de exento/IVA 5 %/IVA 10 % y total en letras correctos. | `factura-preimpresa-preview.pdf` y `.png` en el compartido SMB; `pdftotext -layout` |
 | 2026-11-27 | Decisión del usuario: **solo PDF virtual**; no autoriza impresión sobre papel preimpreso real. | Respuesta registrada en esta sesión y en la sección «Decisión de validación» |
-| 2026-11-27 | Solicitud posterior del usuario: instalar impresora PDF en la VM, activar la factura preimpresa y versionar la evidencia. Procedimiento documentado; verificación de privilegios en curso. | Sección «Habilitación de impresora PDF en la VM» y `check_admin.bat` en el compartido SMB |
+| 2026-11-27 | Solicitud posterior del usuario: instalar impresora PDF en la VM, activar la factura preimpresa y versionar la evidencia. | Sección «Habilitación de impresora PDF en la VM» y plan de ajuste `3.83.1` |
+| 2026-11-27 | *Microsoft Print to PDF* no existe en la imagen (`dism`: `0x800f080c`, `feature ... is unknown`). Se instala PDFCreator 6.3.1 (GPL v3) desde `PDFCreator-6_3_1-Setup.exe`; `SETUP_EXIT=0`. | `fullsetup2.out`, `pdfcreator-fullsetup.log` en el compartido SMB |
+| 2026-11-27 | `wmic printer get name,drivername` → `PDFCreator  PDFCreator`; `PrintProbe` → `DEFAULT=Win32 Printer : PDFCreator`, `SERVICE=PDFCreator`. | Salidas de WMIC y `PrintProbe` en el compartido SMB |
+| 2026-11-27 | Factura activada por configuración (`machine.invoice.preprinted=true`, `machine.invoice.printername=PDFCreator`) y POS reiniciado (`java.exe` PID 3032, `uniCenta oPOS - 3.82`). | `invoice_config.out`, `checkpos.out`, `pos.log` |
+| 2026-11-27 | PDF generado desde el `PrinterJob` de producción: `PRINT_OK=true`; `factura-preimpresa-vm.pdf` (8.920 bytes, 1 página) guardado vía `SaveButton` y archivado como `factura-preimpresa-printerjob.pdf`. | `printjob.log`, `factura-preimpresa-printerjob.pdf` y `pdftotext -layout` (dos copias, total 10.254 y total en letras) |
 
 ## Habilitación de impresora PDF en la VM (solicitud posterior del usuario)
 
 | Campo | Valor |
 | :--- | :--- |
 | Fecha | 2026-11-27 |
-| Solicitud | Instalar *Microsoft Print to PDF* en la VM Windows 10, activar la factura preimpresa y actualizar el repositorio con la evidencia. |
-| Estado | **en curso** — verificación de privilegios administrativos y de la característica de impresión PDF en ejecución. |
+| Solicitud | Instalar una impresora PDF en la VM Windows 10, activar la factura preimpresa y actualizar el repositorio con la evidencia. |
+| Estado | **entregado** como `3.83.1` — impresora `PDFCreator` instalada, PDF generado desde el `PrinterJob` de producción y documentación sincronizada. Detalle completo en el plan [`PLAN-ajuste-impresion-factura-pdf-vm-2026-11-27`](plan-ajuste-impresion-factura-pdf-vm-2026-11-27.md). |
 | Restricción vigente | Sigue prohibida la impresión sobre papel preimpreso real sin autorización nueva y explícita. Solo se permite PDF virtual. |
 
-Procedimiento previsto, registrado para reproducibilidad:
+Procedimiento ejecutado, registrado para reproducibilidad:
 
-1. Verificar que el usuario `Marcelo` pertenece a `Administradores` y consultar el estado de `Printing-PrintToPDFServices-Features` con `dism /online /get-featureinfo`.
-2. Habilitar la característica:
+1. Verificado: `whoami /groups` → `BUILTIN\Administrators` y `Mandatory Label\High Mandatory Level`.
+2. *Microsoft Print to PDF* **no está disponible** en esta imagen: `dism /online /get-featureinfo /featurename:Printing-PrintToPDFServices-Features` → `Error: 0x800f080c`, `Feature name Printing-PrintToPDFServices-Features is unknown`.
+3. Instalado PDFCreator 6.3.1 (GPL v3), que sí crea una impresora real del sistema:
    ```cmd
-   dism /online /enable-feature /featurename:Printing-PrintToPDFServices-Features /all /norestart
+   PDFCreator-6_3_1-Setup.exe /VerySilent /NoIcons /DisableContextMenu /LogFile=C:\unicenta-build\pdfcreator-fullsetup.log
    ```
-3. Verificar el servicio de impresión con `PrintProbe` (`javax.print.PrintServiceLookup`) y confirmar que aparece `Microsoft Print To PDF`.
-4. Activar la factura en `%USERPROFILE%\unicentaopos.properties`:
+   El primer intento desde `\\192.168.122.1\compartidos` terminó con `Access is denied`; se copió el instalador a `C:\unicenta-build\` y la segunda ejecución devolvió `SETUP_EXIT=0`.
+4. Verificado el servicio de impresión con `PrintProbe` (`javax.print.PrintServiceLookup`): `DEFAULT=Win32 Printer : PDFCreator`, `SERVICE=PDFCreator` (`wmic printer get name,drivername` → `PDFCreator  PDFCreator`).
+5. Activada la factura en `%USERPROFILE%\unicentaopos.properties`:
    ```properties
    machine.invoice.preprinted=true
-   machine.invoice.printername=Microsoft Print To PDF
+   machine.invoice.printername=PDFCreator
    ```
-5. Reiniciar el POS y dejar la VM lista para que el usuario realice la prueba.
-6. Registrar la evidencia en la tabla de seguimiento, sincronizar `docs/plans/ACTIVE.md` y publicar en `origin/main`.
-
-El resultado de los pasos 1–5 se completará en la tabla de seguimiento y en el cierre en cuanto finalice la comprobación en curso.
+6. Reiniciado el POS (`java.exe`, título `uniCenta oPOS - 3.82`) y generado el PDF desde el `PrinterJob` de producción (`PRINT_OK=true` en `printjob.log`). El PDF se guardó desde el botón `SaveButton` de la GUI de PDFCreator como `C:\unicenta-build\factura-preimpresa-vm.pdf` y se archivó en el compartido como `factura-preimpresa-printerjob.pdf`; `pdftotext -layout` confirma dos copias, total `10.254` y total en letras.
+7. Registrada la evidencia en la tabla de seguimiento, sincronizados `docs/plans/ACTIVE.md`, `ROADMAP.md`, `featurelist.json` y `AGENTS.md`, y publicado en `origin/main`.
 
 ## Cierre
 
-Entregado con el alcance autorizado: código, plantilla, 71 tests, `ant -f build.xml clean test dist` en Linux y Windows 10, JAR desplegado en `C:\unicenta`, POS reiniciado y vista PDF virtual revisada. **No se imprimió papel preimpreso**: el usuario eligió «Solo PDF virtual». Si se aporta el formulario físico, se ajustarán las coordenadas en `reports/invoice-template.properties` y se registrará aquí; para papel real hace falta una autorización nueva. Todo avance debe registrarse aquí y en `docs/plans/ACTIVE.md`.
+Entregado con el alcance autorizado: código, plantilla, 71 tests, `ant -f build.xml clean test dist` en Linux y Windows 10, JAR desplegado en `C:\unicenta`, POS reiniciado, impresora PDF `PDFCreator` instalada y PDF generado desde el `PrinterJob` de producción. El ajuste operativo se registró como `3.83.1` en su propio plan y en `ROADMAP.md` / `featurelist.json` / `ACTIVE.md` / `AGENTS.md`. **No se imprimió papel preimpreso**: el usuario eligió «Solo PDF virtual». Si se aporta el formulario físico, se ajustarán las coordenadas en `reports/invoice-template.properties` y se registrará aquí; para papel real hace falta una autorización nueva. Todo avance debe registrarse aquí y en `docs/plans/ACTIVE.md`.

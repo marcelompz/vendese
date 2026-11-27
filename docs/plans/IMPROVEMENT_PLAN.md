@@ -2,6 +2,7 @@
 
 > Análisis realizado sobre los 552 archivos Java (~97.460 líneas) de `src-beans`, `src-data` y `src-pos`.
 > Estado: **Fase 1 implementada** (ver §4). El resto queda planificado con criterios de aceptación.
+> Versionamiento (`MAYOR.FEATURE.PATCH`, ver [`ROADMAP.md`](../../ROADMAP.md)): fases 0–3 = base `3.81.0`/`3.82.0`; Fase 4 = `3.85.0` (reservada); Fase 5 = `3.86.0` (reservada).
 
 ---
 
