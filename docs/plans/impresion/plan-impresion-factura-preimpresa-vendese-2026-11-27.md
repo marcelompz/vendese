@@ -95,7 +95,7 @@ Excluye: facturación electrónica, envío a organismos fiscales, timbrado/firma
 - [x] Render Java2D implementado sin dependencias nuevas y compatible con Java 7.
 - [x] Plantilla en mm con override en `%USERPROFILE%` (verificación en runtime pendiente).
 - [x] Dos copias y un único disparador de impresión; sin duplicar el ticket térmico.
-- [ ] `ant -f build.xml clean test dist` OK y nuevas suites registradas en `build_working.xml`.
+- [x] `ant -f build.xml clean test dist` OK en JDK 8/Linux (71 tests, 0 fallos) y nuevas suites registradas en `build_working.xml`; falta repetir en Windows 10.
 - [ ] Evidencia de build/tests y de la validación en VM Windows 10 (PDF virtual; papel real solo con autorización).
 - [x] `README.md`, `ARCHITECTURE.md` y `docs/plans/ACTIVE.md` sincronizados.
 - [x] GPL v3, atribución a uniCenta oPOS / Jack Gerrard y a Marcelo Pesallaccia (@marcelompz) conservadas.
@@ -115,6 +115,7 @@ El plan permanece en `borrador` hasta que se apruebe y se autorice la prueba en 
 | 2026-11-27 | Base Java2D/`Printable` ya presente en `BasicTicketForPrinter` y `PrintableBasicTicket`; no hay soporte de factura preimpresa ni tests de impresión. | Revisión de `printer/ticket/`, `printer/printer/` y `test/` |
 | 2026-11-27 | Implementados `InvoiceTemplate`, `InvoiceData`, `SpanishAmountToWords`, `PreprintedInvoicePrintable` e `InvoicePrintService`; plantilla por defecto y hook en `JPanelTicket`. | `git diff` / archivos nuevos |
 | 2026-11-27 | 5 suites JUnit nuevas registradas en `build_working.xml`; documentación de diseño, README y ARQUITECTURA actualizadas. | `test/com/openbravo/pos/printer/invoice/`, `docs/plans/impresion/diseno-factura-preimpresa-vendese.md` |
+| 2026-11-27 | `ant -f build.xml clean test dist` OK en JDK 8 (Temurin 8u514): 570 fuentes, 71 tests, 0 fallos; ZIPs `unicentaopos_3.82_bin.zip` y `..._src.zip` generados. Correcciones publicadas en `1427922`. | Salida de Ant en host Linux; pendiente de repetir en VM Windows 10 |
 
 ## Cierre
 
