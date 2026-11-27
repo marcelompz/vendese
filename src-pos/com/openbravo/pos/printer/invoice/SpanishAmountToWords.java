@@ -6,6 +6,8 @@
 
 package com.openbravo.pos.printer.invoice;
 
+import java.util.Locale;
+
 /**
  * Convierte un importe entero a letras en español, sin decimales y sin
  * nombre de moneda, siguiendo la convención del formulario de referencia
@@ -99,7 +101,10 @@ public final class SpanishAmountToWords {
             } else {
                 int tens = rest / 10;
                 int units = rest % 10;
-                if (units == 0) {
+                if (tens == 2 && units > 0) {
+                    // Veintiuno ... veintinueve se escriben juntos en es_ES.
+                    text.append("Veinti").append(UNITS[units].toLowerCase(new Locale("es", "ES")));
+                } else if (units == 0) {
                     text.append(TENS[tens]);
                 } else {
                     text.append(TENS[tens]).append(" Y ").append(UNITS[units]);

@@ -248,7 +248,12 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         m_jPanelCentral.add(m_ticketlines, java.awt.BorderLayout.CENTER);
         
         m_TTP = new TicketParser(m_App.getDeviceTicket(), dlSystem);
-        invoicePrintService = new InvoicePrintService(m_App.getProperties());
+        Properties invoiceProps = new Properties();
+        String preprinted = m_App.getProperties().getProperty("machine.invoice.preprinted");
+        String invoicePrinter = m_App.getProperties().getProperty("machine.invoice.printername");
+        invoiceProps.setProperty("machine.invoice.preprinted", preprinted == null ? "false" : preprinted);
+        invoiceProps.setProperty("machine.invoice.printername", invoicePrinter == null ? "(Default)" : invoicePrinter);
+        invoicePrintService = new InvoicePrintService(invoiceProps);
 
         // Los botones configurables...
         m_jbtnconfig = new JPanelButtons("Ticket.Buttons", this);

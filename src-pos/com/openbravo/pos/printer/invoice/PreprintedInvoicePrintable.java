@@ -129,7 +129,7 @@ public final class PreprintedInvoicePrintable implements Printable {
         if (text == null || text.length() == 0) {
             return;
         }
-        g2d.drawString(text, template.mmToPoints(xMm), template.mmToPoints(yMm));
+        g2d.drawString(text, (float) template.mmToPoints(xMm), (float) template.mmToPoints(yMm));
     }
 
     private static String cleanDescription(String description) {
