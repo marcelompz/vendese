@@ -31,7 +31,7 @@ Para uso habitual en un equipo local o red local, los motores recomendados son:
 | Motor | Archivo en `lib/` | Uso recomendado |
 |---|---|---|
 | **Apache Derby Embedded** *(por defecto)* | `derby.jar` | Instalación rápida en **un solo terminal** (sin instalar servidor de base de datos). |
-| **MySQL** *(o MariaDB)* | `mysql-connector-java-5.1.26-bin.jar` | **Servidor local o múltiples terminales** en red; ligero, fácil de respaldar en vivo y administrar. |
+| **MariaDB** *(recomendado como servidor, o MySQL)* | `mysql-connector-java-5.1.26-bin.jar` | **Servidor local o múltiples terminales** en red; ligero, compatible directo con el driver incluido y fácil de respaldar en vivo. |
 
 > *Otros motores soportados:* El proyecto también incluye controladores para **PostgreSQL** (`postgresql-9.2-1003.jdbc4.jar`), **Apache Derby Client/Server** (`derbyclient.jar`), **Oracle 11g Express** (`ojdbc6.jar`) y **HSQLDB** (`hsqldb.jar`, *no recomendado* por un error conocido con campos BLOB indicado en `README_First.txt`).
 
@@ -98,8 +98,10 @@ No requiere instalación ni pasos previos. En el primer arranque la aplicación 
 - **Windows:** `%USERPROFILE%\unicentaopos-database`
 - **Linux/macOS:** `$HOME/unicentaopos-database`
 
-### 3.2 Si usa MySQL (recomendado para servidor local o múltiples cajas)
-Antes de iniciar `@vendese`, instale MySQL (o MariaDB) y cree una **base de datos vacía** y un usuario con privilegios sobre ella. No cree las tablas manualmente: la aplicación lo hará en el primer arranque.
+### 3.2 Si usa MariaDB o MySQL (recomendado para servidor local o múltiples cajas)
+Se recomienda **MariaDB** por su menor consumo de recursos y compatibilidad directa con el conector JDBC incluido (`mysql-connector-java-5.1.26-bin.jar`), aunque los mismos pasos aplican si ya utiliza **MySQL**.
+
+Antes de iniciar `@vendese`, instale MariaDB (en Linux suele estar disponible como `mariadb-server`; en Windows mediante su instalador MSI) y cree una **base de datos vacía** y un usuario con privilegios sobre ella. No cree las tablas manualmente: la aplicación lo hará en el primer arranque.
 
 ```sql
 CREATE DATABASE unicentaopos CHARACTER SET utf8 COLLATE utf8_general_ci;
@@ -109,7 +111,7 @@ FLUSH PRIVILEGES;
 ```
 *(Si conectará otras cajas por red, reemplace `'localhost'` por `'%'` o la subred correspondiente y habilite el puerto `3306` en el firewall).*
 
-> *Nota para MySQL 8+:* el conector incluido (`mysql-connector-java-5.1.26-bin.jar`) es de la serie 5.1; si usa MySQL 8+, verifique el método de autenticación del usuario (`mysql_native_password`) o coloque un conector JDBC más reciente compatible con Java 8 dentro de `lib/`.
+> *Nota si opta por MySQL 8+:* el conector incluido (`mysql-connector-java-5.1.26-bin.jar`) es de la serie 5.1; en MySQL 8+ deberá usar `mysql_native_password` para el usuario o colocar un conector JDBC más reciente compatible con Java 8 dentro de `lib/`.
 
 ---
 
@@ -130,11 +132,11 @@ La configuración se guarda en el archivo `unicentaopos.properties` dentro del d
 
 ### Pestañas principales a revisar
 1. **Base de datos (`Database`):**
-   - Seleccione el motor en el desplegable (`Apache Derby Embedded` o `MySQL`; también figuran otros motores compatibles como `PostgreSQL`).
+   - Seleccione el motor en el desplegable (`Apache Derby Embedded` o `MySQL` —esta última opción se utiliza tanto para **MariaDB** como para **MySQL**—; también figuran otros motores compatibles como `PostgreSQL`).
    - Al elegir un motor se autocompletan los campos recomendados:
      - **Librería del driver (`db.driverlib`):** ruta al `.jar` dentro de `lib/`.
      - **Clase del driver (`db.driver`):** p. ej. `org.apache.derby.jdbc.EmbeddedDriver` o `com.mysql.jdbc.Driver`.
-     - **URL (`db.URL`):** p. ej. `jdbc:mysql://localhost:3306/unicentaopos` en MySQL.
+     - **URL (`db.URL`):** p. ej. `jdbc:mysql://localhost:3306/unicentaopos` para MariaDB/MySQL.
    - Ingrese **Usuario** y **Contraseña** de la base de datos.
    - Pulse el botón **Test** para confirmar que la conexión es exitosa.
    - *Nota de seguridad:* Por defecto solo se permite cargar drivers JDBC ubicados dentro del directorio de la aplicación (`lib/`). Si necesita usar un driver externo del sistema, agregue `db.driverlib.allowexternal=true` en `unicentaopos.properties`.
@@ -194,7 +196,7 @@ El sistema crea cuatro usuarios sin contraseña por defecto:
 - Al iniciar la nueva versión contra una base de datos de una versión compatible anterior, la aplicación detectará la versión en la tabla `APPLICATIONS` y solicitará confirmación para ejecutar el script de actualización (`*-upgrade-<versión>.sql`).
 
 ### 6.2 Migración entre motores de base de datos
-Para migrar datos (por ejemplo, de Derby Embedded a MySQL):
+Para migrar datos (por ejemplo, de Derby Embedded a MariaDB/MySQL):
 - **Windows:** ejecute `Migrate.bat`.
 - **Linux/macOS:** la herramienta gráfica corresponde a la clase `com.openbravo.pos.migrate.JFrmMigrate` (nota: `migrate.sh` contiene errores de formato en esta versión; ejecute `java` usando el mismo `CLASSPATH` de `start.sh` apuntando a `com.openbravo.pos.migrate.JFrmMigrate`).
 
@@ -202,7 +204,7 @@ Para migrar datos (por ejemplo, de Derby Embedded a MySQL):
 
 ## 7. Copias de seguridad (archivos críticos)
 
-Además de respaldar la base de datos (`~/unicentaopos-database` en Derby Embedded, o mediante `mysqldump` en MySQL), respalde los siguientes archivos del directorio personal del usuario (`%USERPROFILE%` en Windows / `$HOME` en Linux y macOS):
+Además de respaldar la base de datos (`~/unicentaopos-database` en Derby Embedded, o mediante `mariadb-dump` / `mysqldump` en MariaDB/MySQL), respalde los siguientes archivos del directorio personal del usuario (`%USERPROFILE%` en Windows / `$HOME` en Linux y macOS):
 
 - `unicentaopos.properties` — configuración de la terminal y credenciales cifradas.
 - `.unicentaopos.key` — clave local AES-128-GCM utilizada para descifrar las contraseñas guardadas (`crypt:`). **Sin este archivo los secretos cifrados no se pueden recuperar.**
@@ -221,7 +223,7 @@ Además de respaldar la base de datos (`~/unicentaopos-database` en Derby Embedd
 - **Error de acceso a puertos serie (impresora/báscula) en Linux:**
   Asegúrese de que su usuario pertenezca al grupo con permisos sobre `/dev/ttyS*` o `/dev/ttyUSB*` (habitualmente `dialout` o `uucp`) y que `start.sh` resuelva su arquitectura en `lib/Linux/`.
 - **Error con HSQLDB al abrir Ventas:**
-  Tal como indica `README_First.txt`, el driver HSQLDB 2.x falla al leer campos BLOB. Utilice Derby Embedded o MySQL.
+  Tal como indica `README_First.txt`, el driver HSQLDB 2.x falla al leer campos BLOB. Utilice Derby Embedded o MariaDB/MySQL.
 
 ---
 
