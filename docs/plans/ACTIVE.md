@@ -3,7 +3,7 @@
 Índice de mejoras e iniciativas **no cerradas** para mantener el control de cambios y evitar solapamientos. Antes de iniciar trabajo no trivial, revisar este registro, [`AGENTS.md`](../../AGENTS.md) y [`IMPROVEMENT_PLAN.md`](../../IMPROVEMENT_PLAN.md).
 
 - **Regla normativa:** sección *"Planes de trabajo y ciclo de vida documental"* en [`AGENTS.md`](../../AGENTS.md).
-- **Última actualización:** 2026-11-27 (creación de `AGENTS.md` y registro `docs/plans/ACTIVE.md`; manual de instalación consolidado en `README.md`).
+- **Última actualización:** 2026-11-27 (creación de `AGENTS.md` y registro `docs/plans/ACTIVE.md`; manual de instalación consolidado en `README.md`; nuevo plan `PLAN-impresion-factura-preimpresa-vendese-2026-11-27`).
 
 ---
 
@@ -11,6 +11,7 @@
 
 | id | dominio | título | estado | versión objetivo | alcance breve | enlace |
 |---|---|---|---|---|---|---|
+| `PLAN-impresion-factura-preimpresa-vendese-2026-11-27` | impresion (transversal: POS / ticket / reportes) | Impresión de factura preimpresa en @vendese con plantilla en mm y validación en VM Windows 10 | **borrador** | 3.83 | Render Java2D + `PrinterJob`, dos copias, `invoice-template.properties` ajustable sin recompilar y un único disparador en el cierre de venta. Sin cambios de esquema en la primera entrega. | [`plan-impresion-factura-preimpresa-vendese-2026-11-27.md`](impresion/plan-impresion-factura-preimpresa-vendese-2026-11-27.md) |
 | `PLAN-MEJORA-FASES-0-3` | seguridad / build | Endurecimiento base (PBKDF2, AES-GCM, RMI loopback, ScriptSecurity) y build Ant/CI | **cerrado** | 3.81 / 3.82 | Fases 0–3 implementadas y verificadas (build unificado, hash PBKDF2, AES-GCM v2, RMI `127.0.0.1` + token, validación de scripts y `db.driverlib`, suite JUnit). | [`IMPROVEMENT_PLAN.md`](../../IMPROVEMENT_PLAN.md) |
 | `PLAN-MEJORA-FASE-4-CALIDAD` | arquitectura / calidad | Refactorización incremental de God classes, ejecución asíncrona y cobertura | **en_progreso** | 3.83+ | Pendiente según `IMPROVEMENT_PLAN.md`: dividir `JPanelTicket`, `JPanelConfigPeripheral` y `DataLogicSales`; completar `SwingWorker` en Jasper/CSV; eliminar duplicación y tipos raw; elevar cobertura de tests. | [`IMPROVEMENT_PLAN.md`](../../IMPROVEMENT_PLAN.md) |
 | `PLAN-MEJORA-FASE-5-DATOS` | datos | Parametrización completa de SQL (`QBFBuilder`/`NormalBuilder`) y endurecimiento de esquema | **en_progreso** | 3.83+ | Implementadas 28 sentencias `PreparedSentence`. Pendiente: parametrizar `QBFBuilder`/`NormalBuilder`, eliminar SQL concatenado residual, añadir constraints/pool y evaluar migraciones versionadas. | [`IMPROVEMENT_PLAN.md`](../../IMPROVEMENT_PLAN.md) |
