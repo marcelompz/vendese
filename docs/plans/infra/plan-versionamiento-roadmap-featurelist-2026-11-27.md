@@ -41,5 +41,5 @@ Establecer un criterio de versionamiento para @vendese a partir de la línea bas
 
 ## 5. Evidencia
 
-- Commits: la implementación de `3.83.0` quedó publicada hasta `5dd42b9`; este cierre documental (incluido el registro de `3.83.1` con PDFCreator en la VM) se publica en `origin/main`.
+- Commits: la implementación de `3.83.0` quedó publicada hasta `5dd42b9`; este cierre documental (incluido el registro de `3.83.1` con PDFCreator en la VM) se publicó en `origin/main` como `0e16169`.
 - Tests / validaciones ejecutadas: validación sintáctica de `featurelist.json` y revisión de enlaces relativos en los documentos; sin cambios en `AppLocal.APP_VERSION` ni en `build_working.xml` / `installer/unicentaopos.iss`.

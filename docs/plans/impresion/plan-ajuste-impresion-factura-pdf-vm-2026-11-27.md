@@ -62,6 +62,6 @@ Completar la entrega de `3.83.0` con los ajustes de operación en la VM Windows 
 | Contenido del PDF | `pdftotext -layout factura-preimpresa-printerjob.pdf -` | Dos copias, importes, total `10.254` y total en letras correctos |
 | Build/tests previos | `ant -f build.xml clean test dist` | 71 tests OK en Linux y Windows 10 (`build_vendese_vm.log`) |
 
-- Commits: la implementación de `3.83.0` está publicada en `5dd42b9` y anteriores; este cierre documental se publica en `origin/main` en el commit de cierre del plan.
+- Commits: la implementación de `3.83.0` está publicada en `5dd42b9` y anteriores; este cierre documental se publicó en `origin/main` como `0e16169`.
 - Restricción cumplida: **no se imprimió papel preimpreso real**. La ventana informativa residual de `PDFCreator-cli.exe` (`0xe0434352`) apareció durante las pruebas de la interfaz de línea de comandos; se terminaron esos procesos y no afecta al servicio `PDFCreator` ni al `PrintService`.
 - Sin cambios de esquema: no corresponde script `*-upgrade-*.sql` para este PATCH.
