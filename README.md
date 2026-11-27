@@ -1,3 +1,15 @@
+# @vendese
+
+Fork of **uniCenta oPOS**.
+
+Original project: uniCenta oPOS by Jack Gerrard (uniCenta) — http://www.unicenta.com  
+Upstream community: http://www.sourceforge.net/projects/unicentaopos
+
+This fork keeps the same license as the original project: **GNU General Public License v3**.
+See [LICENSE.md](LICENSE.md).
+
+---
+
 03 November 2014
 Release: v3.81
 
@@ -83,10 +95,12 @@ free open source software project.
 If you like our software please consider making a donation - www.unicenta.com/support
 You may want to help others in our community www.sourceforge.net/projects/unicentaopos
 
-@vendese also provide development services for @vendese so if you
-find you need some tweaks or a commercial-grade support service then get
-in touch: support@unicenta.com
+The original uniCenta oPOS project also provides development services so if
+you need tweaks or a commercial-grade support service, get in touch:
+support@unicenta.com
 
 
 Jack Gerrard
-Founder, @vendese
+Founder, uniCenta (proyecto original)
+
+@vendese — fork de uniCenta oPOS: https://github.com/marcelompz/vendese
