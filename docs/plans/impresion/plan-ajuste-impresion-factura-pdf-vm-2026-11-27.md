@@ -70,4 +70,4 @@ Completar la entrega de `3.83.0` con los ajustes de operación en la VM Windows 
 
 **Cerrado el 2026-11-27.** Se cumple el DoD con la evidencia de la sección 5: `PDFCreator` verificada en `PrintServiceLookup`, configuración activa sin recompilar, POS reiniciado con el JAR de `3.83.0`, `PRINT_OK=true`, PDF de 8.920 bytes revisado con `pdftotext -layout` y 71 tests en verde en Linux y VM Windows 10. No se tocó código, esquema ni `AppLocal.APP_VERSION` (sigue en `3.82`).
 
-El commit de cierre de `3.83.1` es `0e16169` (completado con `98a0c37` en la evidencia). La impresión sobre papel preimpreso real sigue prohibida sin autorización nueva y explícita; este cierre cubre únicamente el PDF virtual.
+El commit de cierre de `3.83.1` es `0e16169` (completado con `98a0c37` en la evidencia y con `351ab15` en el cierre formal de planes). La impresión sobre papel preimpreso real sigue prohibida sin autorización nueva y explícita; este cierre cubre únicamente el PDF virtual.

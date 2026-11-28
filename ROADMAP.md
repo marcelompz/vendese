@@ -31,7 +31,7 @@
 
 ## Proceso de documentación (sin release de código)
 
-- [`PLAN-versionamiento-roadmap-featurelist-2026-11-27`](docs/plans/infra/plan-versionamiento-roadmap-featurelist-2026-11-27.md) — **cerrado**: define el criterio `MAYOR.FEATURE.PATCH`, crea `ROADMAP.md` y `featurelist.json` y los sincroniza con `AGENTS.md` / `ACTIVE.md`. No modifica `AppLocal.APP_VERSION`.
+- [`PLAN-versionamiento-roadmap-featurelist-2026-11-27`](docs/plans/infra/plan-versionamiento-roadmap-featurelist-2026-11-27.md) — **cerrado** en `351ab15`: define el criterio `MAYOR.FEATURE.PATCH`, crea `ROADMAP.md` y `featurelist.json` y los sincroniza con `AGENTS.md` / `ACTIVE.md`. No modifica `AppLocal.APP_VERSION`.
 
 ## Cómo registrar una versión nueva
 

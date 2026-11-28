@@ -162,6 +162,6 @@ Procedimiento ejecutado, registrado para reproducibilidad:
 
 **Cerrado el 2026-11-27** con el alcance autorizado: código, plantilla, 71 tests, `ant -f build.xml clean test dist` en Linux y Windows 10, JAR desplegado en `C:\unicenta`, POS reiniciado, impresora PDF `PDFCreator` instalada y PDF generado desde el `PrinterJob` de producción. El ajuste operativo se registró como `3.83.1` en su propio plan y en `ROADMAP.md` / `featurelist.json` / `ACTIVE.md` / `AGENTS.md`.
 
-Evidencia vinculada: commits `1427922`, `63822cd`, `5dd42b9`, `0e16169` y `98a0c37`; `build_vendese_vm.log` (`OK (71 tests)`, `BUILD SUCCESSFUL`); `printjob.log` (`PRINT_OK=true`); `factura-preimpresa-printerjob.pdf` (dos copias, total `10.254` y total en letras, revisado con `pdftotext -layout`); `final_check.out` (impresora, propiedades, POS y PDF).
+Evidencia vinculada: commits `1427922`, `63822cd`, `5dd42b9`, `0e16169`, `98a0c37` y `351ab15` (cierre de planes); `build_vendese_vm.log` (`OK (71 tests)`, `BUILD SUCCESSFUL`); `printjob.log` (`PRINT_OK=true`); `factura-preimpresa-printerjob.pdf` (dos copias, total `10.254` y total en letras, revisado con `pdftotext -layout`); `final_check.out` (impresora, propiedades, POS y PDF).
 
 **No se imprimió papel preimpreso**: el usuario eligió «Solo PDF virtual». La medición del formulario físico y cualquier prueba en papel real quedan fuera de este cierre y requieren autorización nueva y explícita; si se autorizan, se registrarán como un PATCH posterior de la línea `3.83`, no reabriendo este plan.

@@ -48,4 +48,4 @@ Establecer un criterio de versionamiento para @vendese a partir de la línea bas
 
 **Cerrado el 2026-11-27.** El criterio `MAYOR.FEATURE.PATCH` quedó definido y sincronizado en `AGENTS.md`, `ROADMAP.md`, `featurelist.json` y `docs/plans/ACTIVE.md`. Las versiones del roadmap son registro de entrega/planificación; `AppLocal.APP_VERSION` sigue en `3.82` y no se publicó ningún release nuevo.
 
-Evidencia: commits `0e16169` y `98a0c37`, `featurelist.json` validado con `python3 -m json.tool`, enlaces relativos revisados y estados de `3.83.0` / `3.83.1` cerrados en los planes de impresión correspondientes.
+Evidencia: commits `0e16169`, `98a0c37` y `351ab15` (cierre formal), `featurelist.json` validado con `python3 -m json.tool`, enlaces relativos revisados y estados de `3.83.0` / `3.83.1` cerrados en los planes de impresión correspondientes.
