@@ -1,0 +1,49 @@
+Importación del catálogo CabralShop en @vendese (VM Windows 10)
+===============================================================
+
+Archivos
+--------
+- catalogo_pos_import.csv : archivo para el importador CSV de @vendese (552 filas).
+- catalogo.csv / catalogo.json : exportación completa del scraping (incluye URLs).
+- imagenes/ : fotos descargadas (538 archivos; el sitio tiene 404 en algunas).
+
+Antes de importar
+-----------------
+1. Hacer copia de seguridad de la base de datos y de ~/.unicentaopos.properties
+   (%USERPROFILE%\unicentaopos.properties en Windows).
+2. Copiar este ZIP a la VM y descomprimirlo, por ejemplo en C:\catalogo_cabral\.
+3. Los precios del sitio no están publicados: buy=0 y sell=0. Si ya conoces los
+   precios, edita esas columnas en catalogo_pos_import.csv antes de importar.
+   Si no, importa con 0 y ajusta los precios después desde PRODUCTOS.
+
+Importar en @vendese
+--------------------
+1. Iniciar sesión con un rol Administrador o Manager.
+2. Menú Utilidades > Herramientas > Importar CSV > Importar Archivo CSV.
+3. En "Archivo", seleccionar catalogo_pos_import.csv.
+4. Separador: coma (,). Pulsar "Leer Cabecera".
+5. Mapear las columnas así:
+   - Nombre          -> name
+   - Referencia      -> reference
+   - Código de barras-> barcode
+   - Precio compra   -> buy
+   - Precio venta    -> sell
+   - Categoría       -> [ USE DEFAULT CATEGORY ] y elegir una categoría por defecto
+     (o mapear "category" si ya creaste esas categorías en el POS).
+6. "Vender con precios IVA incluido": marcar solo si tu configuración de impuestos
+   trabaja con precio final.
+7. Pulsar "Importar CSV" y revisar el resultado: Productos nuevos / Precios
+   actualizados / Datos faltantes / Datos inválidos.
+8. Verificar además los reportes Utilidades > Herramientas > Importar CSV:
+   Nuevos productos, Datos faltantes, Datos inválidos, Categorías inválidas.
+
+Notas
+-----
+- reference y barcode usan CABRAL-<id>, por lo que no colisionan con códigos
+  existentes. Los nombres duplicados del sitio se han distinguido con [id].
+- El importador CSV no importa imágenes. La carpeta imagenes/ queda como
+  referencia: local_image_path en catalogo.csv indica qué archivo corresponde
+  a cada producto.
+- Categorías detectadas: SERVICIOS, INTERIOR, EXTERIOR, LLANTAS/CUBIERTAS,
+  ELÉCTRICOS y HERRAMIENTAS (6). El resto de subcategorías se agruparon en
+  la primera categoría principal en que aparece cada producto.

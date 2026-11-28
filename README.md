@@ -240,5 +240,24 @@ Además de respaldar la base de datos (`~/unicentaopos-database` en Derby Embedd
 
 ---
 
+## 9. Catálogo desde CabralShop (utilidad de datos)
+
+`scraper_catalogo.py` genera un catálogo listo para importar en el POS usando el entorno virtual de Python del repositorio:
+
+```bash
+.venv/bin/python scraper_catalogo.py
+```
+
+Salidas en `salida_catalogo/`:
+
+- `catalogo_pos_import.csv`: columnas `name`, `reference`, `barcode`, `buy`, `sell` y `category` para el menú **Utilidades > Herramientas > Importar CSV > Importar Archivo CSV**. Los nombres, references y barcodes son únicos.
+- `catalogo.csv` y `catalogo.json`: exportación completa con URLs de categoría, producto e imagen.
+- `imagenes/`: fotos descargadas. El importador CSV de @vendese no importa imágenes; esta carpeta queda como referencia.
+- `IMPORTAR_EN_VM.txt`: pasos para copiar e importar el catálogo en una VM con Windows 10.
+
+El sitio no publica precios, por lo que `buy` y `sell` se generan en `0`: complétalos antes de importar o ajústalos después desde **Productos**. El paquete `catalogo_cabral_para_vm.zip` reúne todos los archivos para trasladarlos a la VM.
+
+---
+
 **Autor del fork:** Marcelo Pesallaccia (`@marcelompz`) — https://github.com/marcelompz/vendese  
 **Basado en:** uniCenta oPOS por Jack Gerrard
