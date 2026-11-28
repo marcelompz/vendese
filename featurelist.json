@@ -2,7 +2,7 @@
   "esquema": "1.0",
   "proyecto": "@vendese",
   "repositorio": "https://github.com/marcelompz/vendese",
-  "actualizado": "2026-11-27",
+  "actualizado": "2026-11-28",
   "criterio_versionamiento": {
     "formato": "MAYOR.FEATURE.PATCH",
     "linea_base": "3.82.0",
@@ -93,21 +93,27 @@
     },
     {
       "version": "3.84.0",
-      "estado": "borrador",
-      "fecha": "2026-11-27",
+      "estado": "cerrado",
+      "fecha": "2026-11-28",
       "dominio": "infra",
       "id_plan": "PLAN-INFRA-UPGRADE-RUNTIME-BD",
       "ruta_plan": "docs/plans/PLAN-INFRA-UPGRADE-RUNTIME-BD/PLAN-INFRA-UPGRADE-RUNTIME-BD.md",
-      "titulo": "Runtime Java 17/21 LTS y BD modernas",
-      "descripcion": "Versión reservada para modernizar el stack de ejecución y persistencia: Java 17/21 LTS, drivers JDBC compatibles con MariaDB 10.11+/11.x y PostgreSQL 15+ con scram-sha-256, dialectos SQL y scripts de arranque. Requiere revisar la invariante source/target 1.7.",
+      "titulo": "Runtime JDK 8/17 LTS y BD modernas",
+      "descripcion": "Runtime y BD (JDK 8/17 LTS): compatibilidad verificada en VM Windows 10 con JDK 8 y 17 manteniendo bytecode Java 7; drivers PostgreSQL 42.7.7, MariaDB 3.5.3 y MySQL Connector/J 8.4.0; JasperReports con javac externo. JDK 21 y conexiones reales a servidores quedan diferidos.",
       "cambios": [
-        "Auditoría de build y flags JVM bajo JDK 17/21.",
-        "Actualización de drivers JDBC y validación de db.driverlib.",
-        "Verificación de dialectos en MariaDB y PostgreSQL modernos.",
-        "Tests de conexión y compatibilidad de esquema."
+        "CI con matriz JDK 8/17 y scripts de arranque con --add-opens condicionales.",
+        "Drivers JDBC modernos añadidos y contratos de URL validados por tests JUnit.",
+        "Configuración Jasper propia de @vendese con compilador javac externo.",
+        "Retirada del proveedor SSL interno eliminado en JDK 9+.",
+        "Despliegue y arranque verificados en VM Windows 10."
       ],
-      "evidencia": [],
-      "notas": "Sin implementación: no altera la compatibilidad Java 7 actual hasta que se apruebe y se publique."
+      "evidencia": [
+        "VM Windows 10: OK (76 tests), BUILD SUCCESSFUL y ANT_RC=0 en JDK 8 y 17",
+        "C:\\temp\\infra_deploy.out: DEPLOY_DONE; JAR con vendese-jasperreports.properties en C:\\unicenta",
+        "POS uniCenta oPOS - 3.82 con C:\\tools\\jdk17\\bin\\javaw.exe en sesión console (PID 3024)",
+        "Archive SHA256 684f29c60728d33262f3873743ea1282c89c8eedd1ccecbccbda1c7d84054b5b"
+      ],
+      "notas": "No hay bump de AppLocal.APP_VERSION (sigue en 3.82), ni cambios de esquema. JDK 21 no se incorpora porque javac 21 rechaza source/target 1.7; las conexiones reales a MariaDB/PostgreSQL quedan diferidas al plan SaaS/datos."
     },
     {
       "version": "3.85.0",

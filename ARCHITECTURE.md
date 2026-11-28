@@ -2,7 +2,7 @@
 
 > Documento generado tras recorrer línea a línea la totalidad del código fuente y los recursos del
 > repositorio. Incluye el estado tras las Fases 1-5 del plan de mejora (`IMPROVEMENT_PLAN.md`).
-> Fecha: 2026-11-27 (actualizado tras `3.83.0`/`3.83.1`). Versión de runtime: **3.82**; entregas documentadas y planes cerrados: `3.83.0` y `3.83.1` (sin bump de `AppLocal.APP_VERSION`).
+> Fecha: 2026-11-28 (actualizado tras `3.83.0`/`3.83.1`/`3.84.0`). Versión de runtime: **3.82**; entregas documentadas y planes cerrados: `3.83.0`, `3.83.1` y `3.84.0` (sin bump de `AppLocal.APP_VERSION`).
 
 ---
 
@@ -14,11 +14,11 @@
 | Naturaleza | TPV/POS de código abierto para pantalla táctil, descendiente directo de Openbravo POS 1.x |
 | Licencia | GPL v3 (`LICENSE.md`); algunas clases Jasper adaptadas son LGPL |
 | Lenguaje | Java 7 (target `1.7`), Swing, JDBC, BeanShell, Velocity, JasperReports, JavaPOS/ESC-POS, RMI, RXTX |
-| Módulos fuente | `src-beans` (34 archivos / 5.549 líneas), `src-data` (121 / 12.225), `src-pos` (403 / 79.934), `test` (16 / 882) |
-| Total Java | **586 archivos, ~109.873 líneas** (incluye 5 suites de impresión de factura) |
+| Módulos fuente | `src-beans` (34 archivos / 5.977 líneas), `src-data` (121 / 13.120), `src-pos` (415 / 89.916), `test` (17 / 933) |
+| Total Java | **587 archivos, 109.946 líneas** (incluye 17 suites JUnit / 76 tests) |
 | Recursos | ~200 `.sql`, 56 `.bs`, 47 `.jrxml`, 526 `.properties`, 144 `.form`, 74 `.xml`, 16 idiomas |
 | Artefactos | `unicentaopos.jar`, `unicentaopos_3.82_bin.zip`, `unicentaopos_3.82_src.zip` |
-| Build | Ant (`build.xml` importa `build_working.xml`) + CI en GitHub Actions (JDK 8) |
+| Build | Ant (`build.xml` importa `build_working.xml`) + CI en GitHub Actions (matriz JDK 8 y 17; `source/target 1.7`) |
 
 ---
 
@@ -270,7 +270,9 @@ fiscalidad, scripting, impresión, JDBC indirecto y configuración.
 
 `JPanelReport` (base) → `PanelReportBean` (configurable desde `.bs`). Cada reporte tiene un `.bs` que
 construye el bean con título, ruta, bundle, sentencia SQL y `JParams*`. `JasperReportLoader` (Fase 4)
-carga `.ser` o compila `.jrxml`, y ahora se ejecuta en un `SwingWorker`. `JRDataSourceBasic` puentea
+carga `.ser` o compila `.jrxml`, y ahora se ejecuta en un `SwingWorker`. Con JDK 9+ usa
+`vendese-jasperreports.properties` (compilación de expresiones con `javac` externo) para evitar que
+otros JARs hagan *shadowing* de la configuración genérica. `JRDataSourceBasic` puentea
 `BaseSentence` → Jasper. El visor es una copia adaptada de `JRViewer` (LGPL, 2.302 líneas).
 
 ### 7.7 Módulo de actualizaciones silenciosas (`pos.updates`)
@@ -460,8 +462,14 @@ NetBeans imposibles de testear.
   unificada de los 3 módulos, `jar` con `Main-Class`, ZIPs bin/src, targets de test con JUnitCore y
   targets de instaladores BitRock/JWS. `build_original.xml` es el histórico (3.01, Java 1.6).
 - `start.bat/sh` y `configure.bat/sh`: classpath con ~25 JARs (`lib/`), `locales/`, `reports/` →
-  `StartPOS` / `JFrmConfig`; `start.sh` detecta el SO. `migrate.sh` está corrupto (todo en una línea
-  y `$DIRNAME/libjasperreports...` sin `/`). `ResetSeq.bat` → `JResetPickupID`.
+  `StartPOS` / `JFrmConfig`; `start.sh` detecta el SO. Los scripts detectan JDK 8/17 desde
+  `JAVA_HOME`/`PATH` (o `C:\tools\jdk*`), añaden `--add-opens` condicionales solo en JDK 9+ y
+  requieren `javac` para JasperReports. `migrate.sh` está corrupto (todo en una línea y
+  `$DIRNAME/libjasperreports...` sin `/`). `ResetSeq.bat` → `JResetPickupID`.
+- Drivers JDBC: se conservan los JAR legacy y se añaden `mariadb-java-client-3.5.3.jar`
+  (`org.mariadb.jdbc.Driver`, `jdbc:mariadb://...`), `mysql-connector-j-8.4.0.jar`
+  (`com.mysql.cj.jdbc.Driver`) y `postgresql-42.7.7.jar` (`scram-sha-256`). `JdbcDriverCompatibilityTest`
+  valida sus contratos con 5 tests dentro de la suite de 17 clases / 76 tests.
 - **Instalador Windows:** los targets BitRock originales (`installer.pos.*`) requieren un `builder`
   propietario y un `installer/installer.xml` que no está en el repo, por lo que no generaban nada.
   Se añadió `installer/unicentaopos.iss` (Inno Setup 6, gratuito) y los targets `stage.installer`,
@@ -478,15 +486,16 @@ NetBeans imposibles de testear.
 
 | Fase | Estado | Resumen |
 |---|---|---|
-| 0 — Entorno | ✅ | JDK 8 + Ant instalados; build verificado |
+| 0 — Entorno | ✅ | JDK 8 y 17 + Ant instalados; build y tests verificados en VM Windows 10 con ambos JDK |
 | 1 — Seguridad básica | ✅ | PBKDF2, escape SQL, 2 bugs, logging, 16 tests |
 | 2 — Credenciales/periféricos | ✅ | AES-GCM, RMI loopback+token, driver validado, 6 tests |
 | 3 — Scripts | ✅ | ScriptSecurity, sin dbPassword en scripts, whitelist, 10 tests |
 | 4 — Calidad | 🔶 | Helpers extraídos, duplicados eliminados, SwingWorker, CI, 6 tests. Pendiente: dividir God classes |
 | 5 — Datos | 🔶 | 28 sentencias migradas a PreparedSentence. Pendiente: QBFBuilder, constraints, pool, Flyway |
 | 3.83 — Factura preimpresa | ✅ | `InvoicePrintService` + `PreprintedInvoicePrintable` (Java2D/`PrinterJob`, mm), plantilla con override, 5 suites nuevas. Planes `3.83.0`/`3.83.1` cerrados; solo PDF virtual. |
+| 3.84 — Runtime y BD | ✅ | JDK 8/17 LTS con `source/target 1.7`, matrices de CI y `--add-opens` condicionales; drivers PostgreSQL 42.7.7, MariaDB 3.5.3 y MySQL Connector/J 8.4.0; Jasper con `javac` externo. Cerrado el 2026-11-28 en VM Windows 10; JDK 21 y conexiones reales quedan diferidos. |
 
-**Resultado verificado:** `ant -f build.xml clean test dist` → BUILD SUCCESSFUL, **71/71 tests** en JDK 8/Linux y VM Windows 10; ZIPs `unicentaopos_3.82_bin.zip` y `..._src.zip` generados.
+**Resultado verificado:** `ant -f build.xml clean test dist` → BUILD SUCCESSFUL, **76/76 tests** en JDK 8 y JDK 17 de VM Windows 10; ZIPs `unicentaopos_3.82_bin.zip` y `..._src.zip` generados; POS desplegado en `C:\unicenta` y arrancado con JDK 17.
 
 ---
 

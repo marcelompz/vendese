@@ -5,12 +5,12 @@
 
 ## Stack y estructura (Java + Apache Ant)
 
-- **Lenguaje y build:** Java (`source/target 1.7`, compilado y validado en CI con **JDK 8 Temurin**) + **Apache Ant** (`build.xml` importa `build_working.xml`; no usar `build_original.xml`).
+- **Lenguaje y build:** Java (`source/target 1.7`, compilado y validado en CI con **JDK 8 y JDK 17 Temurin**) + **Apache Ant** (`build.xml` importa `build_working.xml`; no usar `build_original.xml`). JDK 21 queda fuera hasta abandonar `source 7`.
 - **Módulos fuente** (se compilan **juntos** en un único `javac` porque `src-beans` referencia clases de `src-pos`):
   - `src-beans/` — widgets táctiles, `Formats`, `LocaleResources`.
   - `src-data/` — micro-ORM propio (`Session`, `SessionDB*`, `BaseSentence`, `BrowsableEditableData`).
   - `src-pos/` — aplicación POS (`forms`, `sales`, `ticket`, `payment`, `printer`, `inventory`, `customers`, `admin`, `epm`, `reports`, `updates`, `scripting`, `scripts/`, `templates/`).
-  - `test/` — 11 suites JUnit 4 ejecutadas mediante `org.junit.runner.JUnitCore` (sin depender de `ant-junit.jar`).
+  - `test/` — 17 suites JUnit 4 ejecutadas mediante `org.junit.runner.JUnitCore` (76 tests; sin depender de `ant-junit.jar`).
 - **Recursos y empaquetado:**
   - `lib/` — dependencias JAR y librerías nativas RXTX (`lib/Linux/`, `lib/Windows/i368-mingw32/`, `lib/Mac_OS_X/`).
   - `locales/` — 16 idiomas; idioma enviado por defecto: **español (`es_ES`)**.
@@ -41,7 +41,7 @@ ant -f build.xml release
 ```
 
 - **CI (`.github/workflows/ci.yml`):**
-  - Job `build` (`ubuntu-latest`, JDK 8 + Ant): `ant -f build.xml clean test dist` → sube `build/dist/*.zip`.
+  - Job `build` (`ubuntu-latest`, matriz JDK 8 y JDK 17 + Ant): `ant -f build.xml clean test dist` → sube `build/dist/*.zip` por versión de JDK.
   - Job `installer-windows` (`windows-latest`, JDK 8 + Ant + Inno Setup): `ant -f build.xml installer.windows -Dinnosetup="C:\Program Files (x86)\Inno Setup 6"` → sube `build/dist/*setup.exe`.
 
 ## Invariantes de arquitectura y seguridad (no romper)
@@ -67,7 +67,7 @@ ant -f build.xml release
   - `MAYOR` (primer dígito): solo cambios incompatibles de arquitectura o API de datos; hoy `3` (pasaría a `4.0.0`).
   - `FEATURE` (segundo dígito): nueva funcionalidad relevante o «cambio mayor funcional»; al subir, el `PATCH` vuelve a `0` (`3.82.0 → 3.83.0`, impresión de factura preimpresa).
   - `PATCH` (tercer dígito): mejoras o correcciones dentro de la misma línea de feature (`3.83.0 → 3.83.1`, ajustes de esa impresión en la VM).
-- **Resumen (detalle en `ROADMAP.md`):** `3.82.0` base heredada; `3.83.0` factura preimpresa (cerrada); `3.83.1` ajustes en VM (cerrados: `PDFCreator` en la VM y PDF desde `PrinterJob`; sin papel real); `3.84.0` runtime/BD (borrador); `3.85.0` Fase 4 calidad; `3.86.0` Fase 5 datos; `3.87.0` SaaS PostgreSQL (por definir).
+- **Resumen (detalle en `ROADMAP.md`):** `3.82.0` base heredada; `3.83.0` factura preimpresa (cerrada); `3.83.1` ajustes en VM (cerrados: `PDFCreator` en la VM y PDF desde `PrinterJob`; sin papel real); `3.84.0` runtime/BD (cerrado el 2026-11-28: JDK 8/17 y drivers JDBC modernos validados en VM; JDK 21 y conexiones reales diferidos); `3.85.0` Fase 4 calidad; `3.86.0` Fase 5 datos; `3.87.0` SaaS PostgreSQL (por definir).
 - **Fuentes de verdad:** [`ROADMAP.md`](ROADMAP.md) y [`featurelist.json`](featurelist.json). Toda versión nueva se añade en ambos con la misma descripción, estado, fecha y plan de origen, y se refleja en [`docs/plans/ACTIVE.md`](docs/plans/ACTIVE.md) y en el `versión objetivo` del plan correspondiente.
 - **No confundir:** en este proyecto «cambio mayor» es el salto de `FEATURE`, no un `MAJOR` semver. Las versiones reservadas del roadmap no cambian el código: `AppLocal.APP_VERSION` sigue en `3.82` hasta un release autorizado.
 - **Proceso:** [`PLAN-versionamiento-roadmap-featurelist-2026-11-27`](docs/plans/infra/plan-versionamiento-roadmap-featurelist-2026-11-27.md).
@@ -101,7 +101,7 @@ Al preparar una nueva versión (`3.82.0` → `3.83.0`, o un ajuste `3.83.0` → 
 - **Classpath manual en `start.sh` / `configure.sh`:** a diferencia de `start.bat` (`lib\*`), `start.sh` enumera cada `.jar` a mano. Si agregas una librería a `lib/`, añádela también a `start.sh` (y `configure.sh` si se usa en configuración).
 - **Compatibilidad Ant 1.7.1:** `build_working.xml` omite intencionalmente `includeantruntime="false"` en `<javac>`.
 - **URLs heredadas en actualizador e instalador:** `UpdateSettings.DEFAULT_URL` (`src-pos/com/openbravo/pos/updates/UpdateSettings.java`) e `installer/unicentaopos.iss` (`MyAppURL`) aún apuntan a `scanby/unicenta`; al activar releases propias de `@vendese`, actualizarlos a `marcelompz/vendese`.
-- **Drivers JDBC antiguos en `lib/`:** `mysql-connector-java-5.1.26-bin.jar` no soporta `caching_sha2_password` de MySQL 8+ sin ajuste; `postgresql-9.2-1003.jdbc4.jar` no soporta `scram-sha-256` de PostgreSQL 14+ sin ajuste o actualización del JAR.
+- **Drivers JDBC en `lib/`:** los JAR legacy (`mysql-connector-java-5.1.26-bin.jar`, `postgresql-9.2-1003.jdbc4.jar`) se conservan solo para compatibilidad; para MySQL 8 usar `mysql-connector-j-8.4.0.jar` con `com.mysql.cj.jdbc.Driver`, para MariaDB usar `mariadb-java-client-3.5.3.jar` con `org.mariadb.jdbc.Driver` / `jdbc:mariadb://...`, y para PostgreSQL moderno usar `postgresql-42.7.7.jar` con `org.postgresql.Driver`. Deben coincidir `db.driverlib`, `db.driver` y `db.URL`.
 - **PostgreSQL `resetSequenceSentence`:** `SessionDBPostgreSQL.java` usa `ALTER SEQUENCE ... RESTART WITH '0'` (con comillas simples); revisar si se utiliza `ResetSeq`.
 - **Windows RXTX 32-bit:** las DLL nativas en `lib/Windows/i368-mingw32` son de 32 bits; si un terminal usa puerto serie con RXTX en Windows requiere JVM x86.
 - **Scripts legacy/obsoletos:** `migrate.sh` está corrupto en una sola línea (`libjasperreports` sin `/`); `build_original.xml` y `unicentaopos_*_installer.xml` (BitRock) no deben usarse.

@@ -19,6 +19,7 @@ Fork de **uniCenta oPOS** mantenido por **Marcelo Pesallaccia** (`@marcelompz`) 
     3. `C:\tools\jdk*` (por ejemplo `jdk8` o `jdk17`).
     4. `%ProgramFiles%\Eclipse Adoptium\jdk-*` o `%ProgramFiles(x86)%\Eclipse Adoptium\jdk-*`.
   - Con JDK 9+ los scripts añaden automáticamente los `--add-opens` mínimos para Swing/Substance/Jasper. Bajo Java 8 no se añaden flags.
+  - **Validado en CI y en VM Windows 10:** JDK 8 y JDK 17 LTS con `source/target 1.7`. JDK 21 no se soporta todavía porque `javac` 21 rechaza `source 7`.
   - **Nota sobre periféricos serie (RXTX) en Windows:** las librerías nativas incluidas en `lib/Windows/i368-mingw32` (`rxtxSerial.dll`, `rxtxParallel.dll`) son de 32 bits. Si va a utilizar dispositivos por puerto serie/paralelo mediante RXTX en Windows, utilice una JVM de 32 bits (x86).
 
 ### 1.2 Software adicional (solo para compilar desde el código fuente)
@@ -32,9 +33,9 @@ Para uso habitual en un equipo local o red local, los motores recomendados son:
 | Motor | Archivo en `lib/` | Uso recomendado |
 |---|---|---|
 | **Apache Derby Embedded** *(por defecto)* | `derby.jar` | Instalación rápida en **un solo terminal** (sin instalar servidor de base de datos). |
-| **MariaDB** *(recomendado como servidor, o MySQL)* | `mysql-connector-java-5.1.26-bin.jar` | **Servidor local o múltiples terminales** en red; ligero, compatible directo con el driver incluido y fácil de respaldar en vivo. |
+| **MariaDB** *(recomendado como servidor, o MySQL)* | `mariadb-java-client-3.5.3.jar` (MariaDB) o `mysql-connector-j-8.4.0.jar` (MySQL 8) | **Servidor local o múltiples terminales** en red; ligero y fácil de respaldar en vivo. El conector legacy `mysql-connector-java-5.1.26-bin.jar` se conserva para instalaciones antiguas. |
 
-> *Otros motores soportados:* El proyecto también incluye controladores para **PostgreSQL** (`postgresql-9.2-1003.jdbc4.jar`), **Apache Derby Client/Server** (`derbyclient.jar`), **Oracle 11g Express** (`ojdbc6.jar`) y **HSQLDB** (`hsqldb.jar`, *no recomendado* por un error conocido con campos BLOB indicado en `README_First.txt`).
+> *Otros motores soportados:* El proyecto también incluye controladores para **PostgreSQL** (`postgresql-42.7.7.jar`, compatible con `scram-sha-256`), **Apache Derby Client/Server** (`derbyclient.jar`), **Oracle 11g Express** (`ojdbc6.jar`) y **HSQLDB** (`hsqldb.jar`, *no recomendado* por un error conocido con campos BLOB indicado en `README_First.txt`).
 
 ---
 
@@ -100,7 +101,7 @@ No requiere instalación ni pasos previos. En el primer arranque la aplicación 
 - **Linux/macOS:** `$HOME/unicentaopos-database`
 
 ### 3.2 Si usa MariaDB o MySQL (recomendado para servidor local o múltiples cajas)
-Se recomienda **MariaDB** por su menor consumo de recursos y compatibilidad directa con el conector JDBC incluido (`mysql-connector-java-5.1.26-bin.jar`), aunque los mismos pasos aplican si ya utiliza **MySQL**.
+Se recomienda **MariaDB** por su menor consumo de recursos; use `mariadb-java-client-3.5.3.jar` con `org.mariadb.jdbc.Driver` y `jdbc:mariadb://...`. Para **MySQL 8** use `mysql-connector-j-8.4.0.jar` con `com.mysql.cj.jdbc.Driver` y `jdbc:mysql://...`. El conector legacy sigue disponible para instalaciones antiguas.
 
 Antes de iniciar `@vendese`, instale MariaDB (en Linux suele estar disponible como `mariadb-server`; en Windows mediante su instalador MSI) y cree una **base de datos vacía** y un usuario con privilegios sobre ella. No cree las tablas manualmente: la aplicación lo hará en el primer arranque.
 
@@ -170,6 +171,7 @@ machine.invoice.printername=(Default)
 - Las coordenadas viven en `reports/invoice-template.properties`. Copie ese archivo a `%USERPROFILE%\invoice-template.properties` y ajuste las claves en mm sin recompilar.
 - El diseño de referencia y el origen de cada dato están en [`docs/plans/impresion/diseno-factura-preimpresa-vendese.md`](docs/plans/impresion/diseno-factura-preimpresa-vendese.md). La alineación debe validarse contra el formulario físico antes de usar papel real.
 - Las entregas `3.83.0` y `3.83.1` están **cerradas**; la validación autorizada fue únicamente PDF virtual. Imprimir sobre papel preimpreso real requiere autorización nueva y explícita.
+- La entrega `3.84.0` (runtime JDK 8/17 y drivers JDBC) también está **cerrada**: 76 tests y `BUILD SUCCESSFUL` en VM Windows 10 con ambos JDK, POS iniciado con JDK 17 y sin cambios de esquema. JDK 21 y las conexiones reales a MariaDB/PostgreSQL quedaron diferidas.
 
 ---
 
