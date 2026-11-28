@@ -10,7 +10,6 @@ import java.net.InetAddress;
 import java.net.URLDecoder;
 import java.net.UnknownHostException;
 import java.rmi.RemoteException;
-import java.security.Security;
 import java.util.*;
 import javax.xml.namespace.QName;
 import javax.xml.rpc.ServiceException;
@@ -37,10 +36,10 @@ public class PaymentGatewayPayPoint implements PaymentGateway {
      * @param props */
     public PaymentGatewayPayPoint(AppProperties props) {
         
-        // Propiedades del sistema
-        System.setProperty("java.protocol.handler.pkgs", "com.sun.net.ssl.internal.www.protocol" );
-        Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
-            
+        // JSSE (HTTPS) is registered by default from Java 6 onward. The old
+        // com.sun.net.ssl.internal.ssl.Provider was removed in JDK 9 and must
+        // not be referenced if the POS runs on JDK 17 LTS.
+        
         // Configuracion del pago
         m_sCommerceID = props.getProperty("payment.commerceid");
         
