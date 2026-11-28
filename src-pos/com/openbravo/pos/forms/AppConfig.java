@@ -230,7 +230,7 @@ public class AppConfig implements AppProperties {
         
 //        m_propsconfig.setProperty("db.driverlib", new File(new File(dirname), "lib/mariadb-java-client-3.5.3.jar").getAbsolutePath());
 //        m_propsconfig.setProperty("db.driver", "org.mariadb.jdbc.Driver");
-//        m_propsconfig.setProperty("db.URL", "jdbc:mysql://localhost:3306/database");
+//        m_propsconfig.setProperty("db.URL", "jdbc:mariadb://localhost:3306/database");
 //        m_propsconfig.setProperty("db.user", "user");
 //        m_propsconfig.setProperty("db.password", "password");
 

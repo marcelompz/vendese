@@ -137,7 +137,7 @@ La configuración se guarda en el archivo `unicentaopos.properties` dentro del d
    - Al elegir un motor se autocompletan los campos recomendados:
      - **Librería del driver (`db.driverlib`):** ruta al `.jar` dentro de `lib/`.
      - **Clase del driver (`db.driver`):** `org.apache.derby.jdbc.EmbeddedDriver`, `org.postgresql.Driver`, `org.mariadb.jdbc.Driver` o `com.mysql.cj.jdbc.Driver`. La clase legacy `com.mysql.jdbc.Driver` sigue funcionando con el JAR 5.1 incluido.
-     - **URL (`db.URL`):** p. ej. `jdbc:mysql://localhost:3306/unicentaopos` para MariaDB/MySQL o `jdbc:postgresql://localhost:5432/unicentaopos` para PostgreSQL.
+     - **URL (`db.URL`):** `jdbc:mariadb://localhost:3306/unicentaopos` con `org.mariadb.jdbc.Driver`, `jdbc:mysql://localhost:3306/unicentaopos` con `com.mysql.cj.jdbc.Driver` (o el legacy `com.mysql.jdbc.Driver`) y `jdbc:postgresql://localhost:5432/unicentaopos` con `org.postgresql.Driver`.
    - Ingrese **Usuario** y **Contraseña** de la base de datos.
    - Pulse el botón **Test** para confirmar que la conexión es exitosa.
    - *Nota de seguridad:* Por defecto solo se permite cargar drivers JDBC ubicados dentro del directorio de la aplicación (`lib/`). Si necesita usar un driver externo del sistema, agregue `db.driverlib.allowexternal=true` en `unicentaopos.properties`.

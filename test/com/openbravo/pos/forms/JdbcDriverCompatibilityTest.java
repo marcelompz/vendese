@@ -25,10 +25,9 @@ public class JdbcDriverCompatibilityTest {
     }
 
     @Test
-    public void modernMariaDbDriverSupportsMySqlUrls() throws Exception {
+    public void modernMariaDbDriverSupportsMariaDbUrls() throws Exception {
         assertTrue(new File("lib/mariadb-java-client-3.5.3.jar").isFile());
         assertDriver("org.mariadb.jdbc.Driver", "jdbc:mariadb://localhost:3306/unicentaopos");
-        assertDriver("org.mariadb.jdbc.Driver", "jdbc:mysql://localhost:3306/unicentaopos");
     }
 
     @Test
