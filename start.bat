@@ -45,6 +45,10 @@ if not defined JAVAX (
     exit /b 1
 )
 
+REM JasperReports 4.5.1 uses external javac for report expressions; expose it on PATH.
+for %%J in ("%JAVAX%") do set "JAVA_DIR=%%~dpJ"
+set "PATH=%JAVA_DIR%;%PATH%"
+
 REM lib\* expands to every JAR in lib (Java 6+); locales and reports are resources.
 set "CP=unicentaopos.jar;lib\*;locales;reports"
 

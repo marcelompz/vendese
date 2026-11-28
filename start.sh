@@ -76,6 +76,8 @@ esac
 JAVA_BIN=java
 if [ -n "$JAVA_HOME" ] && [ -x "$JAVA_HOME/bin/java" ]; then
     JAVA_BIN="$JAVA_HOME/bin/java"
+    PATH="$JAVA_HOME/bin:$PATH"
+    export PATH
 fi
 
 # JDK 9+ needs explicit opens for legacy Swing/Substance/Jasper reflection.
