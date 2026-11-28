@@ -77,7 +77,13 @@ public class StartPOS {
      * @param args
      */
     public static void main (final String args[]) {
-        
+
+        // Select the @vendese Jasper configuration before any Jasper class is
+        // initialized: JasperReports 4.5.1 needs external javac on JDK 9+.
+        if (System.getProperty("net.sf.jasperreports.properties") == null) {
+            System.setProperty("net.sf.jasperreports.properties", "vendese-jasperreports.properties");
+        }
+
         java.awt.EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {

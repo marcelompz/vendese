@@ -37,6 +37,15 @@ import net.sf.jasperreports.engine.xml.JRXmlLoader;
  */
 public final class JasperReportLoader {
 
+    static {
+        // Use the @vendese-specific Jasper configuration. Other Jasper jars on
+        // the classpath also ship a generic jasperreports.properties, so a
+        // uniquely named resource avoids being shadowed on JDK 9+.
+        if (System.getProperty("net.sf.jasperreports.properties") == null) {
+            System.setProperty("net.sf.jasperreports.properties", "vendese-jasperreports.properties");
+        }
+    }
+
     private JasperReportLoader() {
     }
 
