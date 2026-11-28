@@ -2,7 +2,7 @@
 
 - **ID:** `PLAN-ajuste-impresion-factura-pdf-vm-2026-11-27`
 - **Dominio:** `impresion` (VM / configuración)
-- **Estado:** `entregado`
+- **Estado:** `cerrado` el 2026-11-27 (alcance autorizado: PDF virtual desde `PrinterJob`; sin papel real)
 - **Versión objetivo:** `3.83.1` (PATCH de `3.83.0`, sin nueva línea de feature)
 - **Fecha:** `2026-11-27`
 - **Plan padre:** [`PLAN-impresion-factura-preimpresa-vendese-2026-11-27`](plan-impresion-factura-preimpresa-vendese-2026-11-27.md)
@@ -65,3 +65,9 @@ Completar la entrega de `3.83.0` con los ajustes de operación en la VM Windows 
 - Commits: la implementación de `3.83.0` está publicada en `5dd42b9` y anteriores; este cierre documental se publicó en `origin/main` como `0e16169`.
 - Restricción cumplida: **no se imprimió papel preimpreso real**. La ventana informativa residual de `PDFCreator-cli.exe` (`0xe0434352`) apareció durante las pruebas de la interfaz de línea de comandos; se terminaron esos procesos y no afecta al servicio `PDFCreator` ni al `PrintService`.
 - Sin cambios de esquema: no corresponde script `*-upgrade-*.sql` para este PATCH.
+
+## 6. Cierre
+
+**Cerrado el 2026-11-27.** Se cumple el DoD con la evidencia de la sección 5: `PDFCreator` verificada en `PrintServiceLookup`, configuración activa sin recompilar, POS reiniciado con el JAR de `3.83.0`, `PRINT_OK=true`, PDF de 8.920 bytes revisado con `pdftotext -layout` y 71 tests en verde en Linux y VM Windows 10. No se tocó código, esquema ni `AppLocal.APP_VERSION` (sigue en `3.82`).
+
+El commit de cierre de `3.83.1` es `0e16169` (completado con `98a0c37` en la evidencia). La impresión sobre papel preimpreso real sigue prohibida sin autorización nueva y explícita; este cierre cubre únicamente el PDF virtual.

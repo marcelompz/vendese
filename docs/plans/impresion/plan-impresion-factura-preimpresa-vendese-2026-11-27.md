@@ -5,7 +5,7 @@
 | id | PLAN-impresion-factura-preimpresa-vendese-2026-11-27 (id estable: se conserva si se amplía el alcance) |
 | titulo | Impresión de factura preimpresa en @vendese sobre formulario físico, con plantilla configurable en milímetros y validación en VM Windows 10 |
 | dominio | impresion (transversal: POS / ticket / reportes) |
-| estado | entregado (código, 71 tests en Linux y Windows 10, PDF virtual y POS en VM validados; sin impresión en papel real por decisión del usuario) |
+| estado | cerrado el 2026-11-27 (alcance autorizado: código, 71 tests en Linux y Windows 10, PDF virtual y POS en VM validados; sin impresión en papel real por decisión del usuario) |
 | owner | Marcelo Pesallaccia (@marcelompz) |
 | version_objetivo | 3.83.0 (criterio `MAYOR.FEATURE.PATCH`; sin cambios de esquema previstos; si aparecen, upgrade 3.82 → 3.83.0 en los 5 motores). Los ajustes posteriores de esta misma feature se registran como 3.83.1 en el plan [`PLAN-ajuste-impresion-factura-pdf-vm-2026-11-27`](plan-ajuste-impresion-factura-pdf-vm-2026-11-27.md). |
 | fecha | 2026-11-27 |
@@ -81,7 +81,7 @@ Excluye: facturación electrónica, envío a organismos fiscales, timbrado/firma
 8. [x] Añadir 5 suites JUnit 4 de impresión y registrarlas en el target `test` de `build_working.xml` con `<arg value="..."/>`.
 9. [x] Ejecutar `ant -f build.xml clean test dist` y verificar el JAR en `build/jar/unicentaopos.jar` (71 tests OK en Linux y en la VM).
 10. [x] Validar en VM Windows 10: `git archive HEAD` al compartido SMB → compilación Ant → copiar JAR y plantilla a `C:\unicenta` → reiniciar POS → verificar título `uniCenta oPOS - 3.82` → generar el PDF desde el `PrinterJob` de producción y revisar posiciones en el PDF virtual (sin formulario físico medido, no se aplica la tolerancia de ±0,5 mm sobre papel).
-11. [ ] Solo con autorización registrada aquí, imprimir sobre papel preimpreso en la VM; adjuntar evidencia. **Pendiente: el usuario no la ha autorizado.**
+11. [ ] Solo con autorización registrada aquí, imprimir sobre papel preimpreso en la VM; adjuntar evidencia. **Fuera del alcance cerrado: el usuario no la ha autorizado; queda como seguimiento futuro, no como deuda del cierre.**
 12. [x] Sincronizar documentación (`ACTIVE.md`, `ROADMAP.md`, `featurelist.json`, `AGENTS.md`) y publicar en `origin/main`.
 
 ## Validación
@@ -129,6 +129,7 @@ El plan se entrega con la validación autorizada (PDF virtual) y permanece abier
 | 2026-11-27 | `wmic printer get name,drivername` → `PDFCreator  PDFCreator`; `PrintProbe` → `DEFAULT=Win32 Printer : PDFCreator`, `SERVICE=PDFCreator`. | Salidas de WMIC y `PrintProbe` en el compartido SMB |
 | 2026-11-27 | Factura activada por configuración (`machine.invoice.preprinted=true`, `machine.invoice.printername=PDFCreator`) y POS reiniciado (`java.exe` PID 3032, `uniCenta oPOS - 3.82`). | `invoice_config.out`, `checkpos.out`, `pos.log` |
 | 2026-11-27 | PDF generado desde el `PrinterJob` de producción: `PRINT_OK=true`; `factura-preimpresa-vm.pdf` (8.920 bytes, 1 página) guardado vía `SaveButton` y archivado como `factura-preimpresa-printerjob.pdf`. | `printjob.log`, `factura-preimpresa-printerjob.pdf` y `pdftotext -layout` (dos copias, total 10.254 y total en letras) |
+| 2026-11-27 | Plan cerrado con el alcance autorizado (PDF virtual); papel real queda como seguimiento futuro. | Este documento, `ACTIVE.md`, `ROADMAP.md` y `featurelist.json` |
 
 ## Habilitación de impresora PDF en la VM (solicitud posterior del usuario)
 
@@ -136,7 +137,7 @@ El plan se entrega con la validación autorizada (PDF virtual) y permanece abier
 | :--- | :--- |
 | Fecha | 2026-11-27 |
 | Solicitud | Instalar una impresora PDF en la VM Windows 10, activar la factura preimpresa y actualizar el repositorio con la evidencia. |
-| Estado | **entregado** como `3.83.1` — impresora `PDFCreator` instalada, PDF generado desde el `PrinterJob` de producción y documentación sincronizada. Detalle completo en el plan [`PLAN-ajuste-impresion-factura-pdf-vm-2026-11-27`](plan-ajuste-impresion-factura-pdf-vm-2026-11-27.md). |
+| Estado | **cerrado** como `3.83.1` — impresora `PDFCreator` instalada, PDF generado desde el `PrinterJob` de producción y documentación sincronizada. Detalle completo en el plan [`PLAN-ajuste-impresion-factura-pdf-vm-2026-11-27`](plan-ajuste-impresion-factura-pdf-vm-2026-11-27.md). |
 | Restricción vigente | Sigue prohibida la impresión sobre papel preimpreso real sin autorización nueva y explícita. Solo se permite PDF virtual. |
 
 Procedimiento ejecutado, registrado para reproducibilidad:
@@ -159,4 +160,8 @@ Procedimiento ejecutado, registrado para reproducibilidad:
 
 ## Cierre
 
-Entregado con el alcance autorizado: código, plantilla, 71 tests, `ant -f build.xml clean test dist` en Linux y Windows 10, JAR desplegado en `C:\unicenta`, POS reiniciado, impresora PDF `PDFCreator` instalada y PDF generado desde el `PrinterJob` de producción. El ajuste operativo se registró como `3.83.1` en su propio plan y en `ROADMAP.md` / `featurelist.json` / `ACTIVE.md` / `AGENTS.md`. **No se imprimió papel preimpreso**: el usuario eligió «Solo PDF virtual». Si se aporta el formulario físico, se ajustarán las coordenadas en `reports/invoice-template.properties` y se registrará aquí; para papel real hace falta una autorización nueva. Todo avance debe registrarse aquí y en `docs/plans/ACTIVE.md`.
+**Cerrado el 2026-11-27** con el alcance autorizado: código, plantilla, 71 tests, `ant -f build.xml clean test dist` en Linux y Windows 10, JAR desplegado en `C:\unicenta`, POS reiniciado, impresora PDF `PDFCreator` instalada y PDF generado desde el `PrinterJob` de producción. El ajuste operativo se registró como `3.83.1` en su propio plan y en `ROADMAP.md` / `featurelist.json` / `ACTIVE.md` / `AGENTS.md`.
+
+Evidencia vinculada: commits `1427922`, `63822cd`, `5dd42b9`, `0e16169` y `98a0c37`; `build_vendese_vm.log` (`OK (71 tests)`, `BUILD SUCCESSFUL`); `printjob.log` (`PRINT_OK=true`); `factura-preimpresa-printerjob.pdf` (dos copias, total `10.254` y total en letras, revisado con `pdftotext -layout`); `final_check.out` (impresora, propiedades, POS y PDF).
+
+**No se imprimió papel preimpreso**: el usuario eligió «Solo PDF virtual». La medición del formulario físico y cualquier prueba en papel real quedan fuera de este cierre y requieren autorización nueva y explícita; si se autorizan, se registrarán como un PATCH posterior de la línea `3.83`, no reabriendo este plan.

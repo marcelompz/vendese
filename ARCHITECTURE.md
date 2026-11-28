@@ -2,7 +2,7 @@
 
 > Documento generado tras recorrer línea a línea la totalidad del código fuente y los recursos del
 > repositorio. Incluye el estado tras las Fases 1-5 del plan de mejora (`IMPROVEMENT_PLAN.md`).
-> Fecha: 2026-11-23. Versión de la aplicación: **3.81**.
+> Fecha: 2026-11-27 (actualizado tras `3.83.0`/`3.83.1`). Versión de runtime: **3.82**; entregas documentadas y planes cerrados: `3.83.0` y `3.83.1` (sin bump de `AppLocal.APP_VERSION`).
 
 ---
 
@@ -14,10 +14,10 @@
 | Naturaleza | TPV/POS de código abierto para pantalla táctil, descendiente directo de Openbravo POS 1.x |
 | Licencia | GPL v3 (`LICENSE.md`); algunas clases Jasper adaptadas son LGPL |
 | Lenguaje | Java 7 (target `1.7`), Swing, JDBC, BeanShell, Velocity, JasperReports, JavaPOS/ESC-POS, RMI, RXTX |
-| Módulos fuente | `src-beans` (34 archivos / 5.549 líneas), `src-data` (121 / 12.225), `src-pos` (403 / 79.934), `test` (8 / 364) |
-| Total Java | **566 archivos, ~98.100 líneas** |
+| Módulos fuente | `src-beans` (34 archivos / 5.549 líneas), `src-data` (121 / 12.225), `src-pos` (403 / 79.934), `test` (16 / 882) |
+| Total Java | **586 archivos, ~109.873 líneas** (incluye 5 suites de impresión de factura) |
 | Recursos | ~200 `.sql`, 56 `.bs`, 47 `.jrxml`, 526 `.properties`, 144 `.form`, 74 `.xml`, 16 idiomas |
-| Artefactos | `unicentaopos.jar`, `unicentaopos_3.81_bin.zip`, `unicentaopos_3.81_src.zip` |
+| Artefactos | `unicentaopos.jar`, `unicentaopos_3.82_bin.zip`, `unicentaopos_3.82_src.zip` |
 | Build | Ant (`build.xml` importa `build_working.xml`) + CI en GitHub Actions (JDK 8) |
 
 ---
@@ -90,7 +90,7 @@ BeanShell desde la base de datos. Los `DataLogic*` son los DAO/servicios.
    - `AppViewConnection.createSession(props)`: valida `db.driverlib`, carga el driver desde un
      `URLClassLoader`, descifra `db.password` (`crypt:` → `AltEncrypter`) y crea `Session`.
    - Obtiene `DataLogicSystem` vía `getBean()` (validado por `BeanNameValidator`).
-   - Compara `findVersion()` con `APP_VERSION=3.81`; si difiere ejecuta
+   - Compara `findVersion()` con `APP_VERSION=3.82`; si difiere ejecuta
      `<Motor>-create.sql` o `<Motor>-upgrade-<versión>.sql` desde `/com/openbravo/pos/scripts/`
      mediante `BatchSentenceResource` (sustituye `$FILE{}` y `$PARAM{}`).
    - Carga propiedades por host (`<host>/properties` en la tabla `RESOURCES`), crea/recupera la
@@ -264,7 +264,7 @@ fiscalidad, scripting, impresión, JDBC indirecto y configuración.
   ESC/POS (Epson/Ithaca/TMU220/Star/SurePOS + `UnicodeTranslator*`), JavaPOS, fiscal, archivo/serie.
 - Visor con 5 animadores (flyer, scroll, blink, curtain, null) sobre `DeviceDisplayBase` (Timer 50 ms).
 - Cajón: ESC/POS y JavaPOS lo abren realmente; los demás hacen `beep()` y registran `DRAWEROPENED`.
-- **Factura preimpresa (opcional):** `printer/invoice/InvoicePrintService.java` imprime un `Printable` Java2D independiente de `DeviceTicket`, con coordenadas en mm desde `reports/invoice-template.properties` (override en `%USERPROFILE%`). Se activa con `machine.invoice.preprinted=true` y se dispara una sola vez desde `JPanelTicket.closeTicket()` para ventas normales, sin duplicar `Printer.Ticket`/`Ticket2`. El modelo `InvoiceData` toma cliente, líneas, impuestos agrupados y total de `TicketInfo`; no introduce dependencias ni cambios de esquema. Ver `docs/plans/impresion/`.
+- **Factura preimpresa (opcional):** `printer/invoice/InvoicePrintService.java` imprime un `Printable` Java2D independiente de `DeviceTicket`, con coordenadas en mm desde `reports/invoice-template.properties` (override en `%USERPROFILE%`). Se activa con `machine.invoice.preprinted=true` y se dispara una sola vez desde `JPanelTicket.closeTicket()` para ventas normales, sin duplicar `Printer.Ticket`/`Ticket2`. El modelo `InvoiceData` toma cliente, líneas, impuestos agrupados y total de `TicketInfo`; no introduce dependencias ni cambios de esquema. Registrado como `3.83.0` y ajustado en `3.83.1` (planes cerrados, solo PDF virtual). Ver `docs/plans/impresion/`.
 
 ### 7.6 Reportes
 
@@ -456,7 +456,7 @@ NetBeans imposibles de testear.
   código original aunque en runtime `dbPassword` llega redactado.
 
 ### 11.5 Build, arranque y documentación
-- `build.xml` importa `build_working.xml` (460 líneas, versión 3.81, `default=dist`): compilación
+- `build.xml` importa `build_working.xml` (versión 3.82, `default=dist`): compilación
   unificada de los 3 módulos, `jar` con `Main-Class`, ZIPs bin/src, targets de test con JUnitCore y
   targets de instaladores BitRock/JWS. `build_original.xml` es el histórico (3.01, Java 1.6).
 - `start.bat/sh` y `configure.bat/sh`: classpath con ~25 JARs (`lib/`), `locales/`, `reports/` →
@@ -484,8 +484,9 @@ NetBeans imposibles de testear.
 | 3 — Scripts | ✅ | ScriptSecurity, sin dbPassword en scripts, whitelist, 10 tests |
 | 4 — Calidad | 🔶 | Helpers extraídos, duplicados eliminados, SwingWorker, CI, 6 tests. Pendiente: dividir God classes |
 | 5 — Datos | 🔶 | 28 sentencias migradas a PreparedSentence. Pendiente: QBFBuilder, constraints, pool, Flyway |
+| 3.83 — Factura preimpresa | ✅ | `InvoicePrintService` + `PreprintedInvoicePrintable` (Java2D/`PrinterJob`, mm), plantilla con override, 5 suites nuevas. Planes `3.83.0`/`3.83.1` cerrados; solo PDF virtual. |
 
-**Resultado verificado:** `ant -f build.xml clean test dist` → BUILD SUCCESSFUL, **38/38 tests**.
+**Resultado verificado:** `ant -f build.xml clean test dist` → BUILD SUCCESSFUL, **71/71 tests** en JDK 8/Linux y VM Windows 10; ZIPs `unicentaopos_3.82_bin.zip` y `..._src.zip` generados.
 
 ---
 

@@ -168,6 +168,7 @@ machine.invoice.printername=(Default)
 - Use `machine.invoice.printername` para elegir una impresora concreta. Para validar sin gastar papel se verificó `PDFCreator` (GPL v3) en Windows 10; *Microsoft Print to PDF* no está disponible en todas las imágenes de Windows. El nombre debe coincidir exactamente con el del `PrintService`.
 - Las coordenadas viven en `reports/invoice-template.properties`. Copie ese archivo a `%USERPROFILE%\invoice-template.properties` y ajuste las claves en mm sin recompilar.
 - El diseño de referencia y el origen de cada dato están en [`docs/plans/impresion/diseno-factura-preimpresa-vendese.md`](docs/plans/impresion/diseno-factura-preimpresa-vendese.md). La alineación debe validarse contra el formulario físico antes de usar papel real.
+- Las entregas `3.83.0` y `3.83.1` están **cerradas**; la validación autorizada fue únicamente PDF virtual. Imprimir sobre papel preimpreso real requiere autorización nueva y explícita.
 
 ---
 

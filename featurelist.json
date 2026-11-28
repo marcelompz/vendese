@@ -48,7 +48,7 @@
     },
     {
       "version": "3.83.0",
-      "estado": "entregado",
+      "estado": "cerrado",
       "fecha": "2026-11-27",
       "dominio": "impresion (POS / ticket / reportes)",
       "id_plan": "PLAN-impresion-factura-preimpresa-vendese-2026-11-27",
@@ -70,7 +70,7 @@
     },
     {
       "version": "3.83.1",
-      "estado": "entregado",
+      "estado": "cerrado",
       "fecha": "2026-11-27",
       "dominio": "impresion (VM / configuración)",
       "id_plan": "PLAN-ajuste-impresion-factura-pdf-vm-2026-11-27",
@@ -165,7 +165,7 @@
   "documentacion_proceso": [
     {
       "id_plan": "PLAN-versionamiento-roadmap-featurelist-2026-11-27",
-      "estado": "entregado",
+      "estado": "cerrado",
       "fecha": "2026-11-27",
       "ruta_plan": "docs/plans/infra/plan-versionamiento-roadmap-featurelist-2026-11-27.md",
       "descripcion": "Define el criterio MAYOR.FEATURE.PATCH, crea ROADMAP.md y featurelist.json y los vincula con AGENTS.md y docs/plans/ACTIVE.md. No implica cambio de versión en el código.",

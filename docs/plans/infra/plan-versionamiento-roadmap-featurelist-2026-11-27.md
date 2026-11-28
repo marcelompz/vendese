@@ -2,7 +2,7 @@
 
 - **ID:** `PLAN-versionamiento-roadmap-featurelist-2026-11-27`
 - **Dominio:** `infra` (documentación y proceso)
-- **Estado:** `entregado`
+- **Estado:** `cerrado` el 2026-11-27
 - **Versión objetivo:** `3.83.0` (solo documentación; sin bump de versión en el código)
 - **Fecha:** `2026-11-27`
 - **Registro:** [`ROADMAP.md`](../../../ROADMAP.md) · [`featurelist.json`](../../../featurelist.json) · [`ACTIVE.md`](../ACTIVE.md)
@@ -43,3 +43,9 @@ Establecer un criterio de versionamiento para @vendese a partir de la línea bas
 
 - Commits: la implementación de `3.83.0` quedó publicada hasta `5dd42b9`; este cierre documental (incluido el registro de `3.83.1` con PDFCreator en la VM) se publicó en `origin/main` como `0e16169`.
 - Tests / validaciones ejecutadas: validación sintáctica de `featurelist.json` y revisión de enlaces relativos en los documentos; sin cambios en `AppLocal.APP_VERSION` ni en `build_working.xml` / `installer/unicentaopos.iss`.
+
+## 6. Cierre
+
+**Cerrado el 2026-11-27.** El criterio `MAYOR.FEATURE.PATCH` quedó definido y sincronizado en `AGENTS.md`, `ROADMAP.md`, `featurelist.json` y `docs/plans/ACTIVE.md`. Las versiones del roadmap son registro de entrega/planificación; `AppLocal.APP_VERSION` sigue en `3.82` y no se publicó ningún release nuevo.
+
+Evidencia: commits `0e16169` y `98a0c37`, `featurelist.json` validado con `python3 -m json.tool`, enlaces relativos revisados y estados de `3.83.0` / `3.83.1` cerrados en los planes de impresión correspondientes.
