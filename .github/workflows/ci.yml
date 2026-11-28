@@ -9,15 +9,19 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        java: ['8', '17']
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up JDK 8
+      - name: Set up JDK ${{ matrix.java }}
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '8'
+          java-version: ${{ matrix.java }}
 
       - name: Install Ant
         run: sudo apt-get update && sudo apt-get install -y ant
@@ -28,7 +32,7 @@ jobs:
       - name: Upload distribution
         uses: actions/upload-artifact@v4
         with:
-          name: unicenta-dist
+          name: unicenta-dist-jdk${{ matrix.java }}
           path: build/dist/*.zip
 
   installer-windows:

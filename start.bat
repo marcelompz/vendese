@@ -21,23 +21,23 @@ REM    along with uniCenta oPOS.  If not, see http://www.gnu.org/licenses/>
 setlocal
 pushd "%~dp0" >nul
 
-REM --- Locate Java 8: JAVA_HOME, PATH, local C:\tools\jdk8*, then common folders ---
+REM --- Locate Java 8+ (8/17 LTS): JAVA_HOME, PATH, C:\tools\jdk*, common folders ---
 set "JAVAX="
 if defined JAVA_HOME if exist "%JAVA_HOME%\bin\javaw.exe" set "JAVAX=%JAVA_HOME%\bin\javaw.exe"
 if not defined JAVAX for %%J in ("javaw.exe") do set "JAVAX=%%~$PATH:J"
 if not defined JAVAX (
-    for /d %%D in ("C:\tools\jdk8*") do if exist "%%D\bin\javaw.exe" set "JAVAX=%%D\bin\javaw.exe"
+    for /d %%D in ("C:\tools\jdk*") do if exist "%%D\bin\javaw.exe" set "JAVAX=%%D\bin\javaw.exe"
 )
 if not defined JAVAX (
-    for /d %%D in ("%ProgramFiles%\Eclipse Adoptium\jdk-8*") do if exist "%%D\bin\javaw.exe" set "JAVAX=%%D\bin\javaw.exe"
+    for /d %%D in ("%ProgramFiles%\Eclipse Adoptium\jdk-*") do if exist "%%D\bin\javaw.exe" set "JAVAX=%%D\bin\javaw.exe"
 )
 if not defined JAVAX (
-    for /d %%D in ("%ProgramFiles(x86)%\Eclipse Adoptium\jdk-8*") do if exist "%%D\bin\javaw.exe" set "JAVAX=%%D\bin\javaw.exe"
+    for /d %%D in ("%ProgramFiles(x86)%\Eclipse Adoptium\jdk-*") do if exist "%%D\bin\javaw.exe" set "JAVAX=%%D\bin\javaw.exe"
 )
 if not defined JAVAX (
     echo.
-    echo No se encontro Java 8 ^(javaw.exe^).
-    echo Instale un JRE/JDK 8 o defina la variable JAVA_HOME.
+    echo No se encontro Java 8 o superior ^(javaw.exe^).
+    echo Instale un JRE/JDK 8 o 17 LTS, o defina la variable JAVA_HOME.
     echo.
     pause
     popd
@@ -47,7 +47,17 @@ if not defined JAVAX (
 
 REM lib\* expands to every JAR in lib (Java 6+); locales and reports are resources.
 set "CP=unicentaopos.jar;lib\*;locales;reports"
-start "" "%JAVAX%" -cp "%CP%" -Djava.library.path="lib\Windows\i368-mingw32" -Ddirname.path=./ -splash:unicenta_splash_dark.png com.openbravo.pos.forms.StartPOS %*
+
+REM JDK 9+ needs explicit opens for legacy Swing/Substance/Jasper reflection.
+set "JAVA9_OPTS="
+for %%J in ("%JAVAX%") do set "JAVA_TEST=%%~dpJjava.exe"
+if exist "%JAVA_TEST%" (
+    "%JAVA_TEST%" --add-opens java.base/java.lang=ALL-UNNAMED -version >nul 2>&1
+    if not errorlevel 1 set "JAVA9_OPTS=--add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.desktop/java.awt=ALL-UNNAMED"
+)
+
+REM Bytecode remains Java 7 (source/target 1.7); runtime may be 8 or 17 LTS.
+start "" "%JAVAX%" %JAVA9_OPTS% -cp "%CP%" -Djava.library.path="lib\Windows\i368-mingw32" -Ddirname.path=./ -splash:unicenta_splash_dark.png com.openbravo.pos.forms.StartPOS %*
 
 popd
 endlocal

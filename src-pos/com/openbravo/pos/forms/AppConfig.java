@@ -228,15 +228,23 @@ public class AppConfig implements AppProperties {
 //        m_propsconfig.setProperty("db.user", "SA");
 //        m_propsconfig.setProperty("db.password", "");
         
-//        m_propsconfig.setProperty("db.driver", "com.mysql.jdbc.Driver");
+//        m_propsconfig.setProperty("db.driverlib", new File(new File(dirname), "lib/mariadb-java-client-3.5.3.jar").getAbsolutePath());
+//        m_propsconfig.setProperty("db.driver", "org.mariadb.jdbc.Driver");
 //        m_propsconfig.setProperty("db.URL", "jdbc:mysql://localhost:3306/database");
-//        m_propsconfig.setProperty("db.user", "user");         
+//        m_propsconfig.setProperty("db.user", "user");
 //        m_propsconfig.setProperty("db.password", "password");
-        
+
+//        m_propsconfig.setProperty("db.driverlib", new File(new File(dirname), "lib/mysql-connector-j-8.4.0.jar").getAbsolutePath());
+//        m_propsconfig.setProperty("db.driver", "com.mysql.cj.jdbc.Driver");
+//        m_propsconfig.setProperty("db.URL", "jdbc:mysql://localhost:3306/database");
+//        m_propsconfig.setProperty("db.user", "user");
+//        m_propsconfig.setProperty("db.password", "password");
+
+//        m_propsconfig.setProperty("db.driverlib", new File(new File(dirname), "lib/postgresql-42.7.7.jar").getAbsolutePath());
 //        m_propsconfig.setProperty("db.driver", "org.postgresql.Driver");
 //        m_propsconfig.setProperty("db.URL", "jdbc:postgresql://localhost:5432/database");
-//        m_propsconfig.setProperty("db.user", "user");         
-//        m_propsconfig.setProperty("db.password", "password");        
+//        m_propsconfig.setProperty("db.user", "user");
+//        m_propsconfig.setProperty("db.password", "password");
 
 
  /**

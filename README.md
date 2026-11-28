@@ -12,16 +12,17 @@ Fork de **uniCenta oPOS** mantenido por **Marcelo Pesallaccia** (`@marcelompz`) 
 
 ### 1.1 Software obligatorio (ejecución)
 - **Sistema operativo:** Windows, Linux o macOS.
-- **Java:** **JRE o JDK 8** (compilado con compatibilidad Java 7 / target `1.7`; probado con Eclipse Adoptium / Temurin 8).
+- **Java:** **JRE/JDK 8 o JDK 17 LTS** (el bytecode sigue siendo Java 7 / target `1.7`; probado con Eclipse Adoptium / Temurin 8 y 17).
   - En **Windows**, los scripts `start.bat` y `configure.bat` buscan `javaw.exe` en este orden:
     1. Variable de entorno `JAVA_HOME` (`%JAVA_HOME%\bin\javaw.exe`).
     2. Variable `PATH`.
-    3. `C:\tools\jdk8*`.
-    4. `%ProgramFiles%\Eclipse Adoptium\jdk-8*` o `%ProgramFiles(x86)%\Eclipse Adoptium\jdk-8*`.
+    3. `C:\tools\jdk*` (por ejemplo `jdk8` o `jdk17`).
+    4. `%ProgramFiles%\Eclipse Adoptium\jdk-*` o `%ProgramFiles(x86)%\Eclipse Adoptium\jdk-*`.
+  - Con JDK 9+ los scripts añaden automáticamente los `--add-opens` mínimos para Swing/Substance/Jasper. Bajo Java 8 no se añaden flags.
   - **Nota sobre periféricos serie (RXTX) en Windows:** las librerías nativas incluidas en `lib/Windows/i368-mingw32` (`rxtxSerial.dll`, `rxtxParallel.dll`) son de 32 bits. Si va a utilizar dispositivos por puerto serie/paralelo mediante RXTX en Windows, utilice una JVM de 32 bits (x86).
 
 ### 1.2 Software adicional (solo para compilar desde el código fuente)
-- **JDK 8** completo (con `javac`).
+- **JDK 8 o 17 LTS** completo (con `javac`); el código se compila con `source/target 1.7` en ambos.
 - **Apache Ant** (`ant`).
 - **Inno Setup 6** (solo si desea generar el instalador `.exe` de Windows).
 
@@ -111,7 +112,7 @@ FLUSH PRIVILEGES;
 ```
 *(Si conectará otras cajas por red, reemplace `'localhost'` por `'%'` o la subred correspondiente y habilite el puerto `3306` en el firewall).*
 
-> *Nota si opta por MySQL 8+:* el conector incluido (`mysql-connector-java-5.1.26-bin.jar`) es de la serie 5.1; en MySQL 8+ deberá usar `mysql_native_password` para el usuario o colocar un conector JDBC más reciente compatible con Java 8 dentro de `lib/`.
+> *Conectores incluidos:* se conserva el conector legacy (`mysql-connector-java-5.1.26-bin.jar`) por compatibilidad y se añaden `postgresql-42.7.7.jar` (`scram-sha-256`), `mariadb-java-client-3.5.3.jar` y `mysql-connector-j-8.4.0.jar` (`caching_sha2_password`). Seleccione el JAR correcto en `db.driverlib` y la clase acorde en `db.driver`.
 
 ---
 
@@ -135,8 +136,8 @@ La configuración se guarda en el archivo `unicentaopos.properties` dentro del d
    - Seleccione el motor en el desplegable (`Apache Derby Embedded` o `MySQL` —esta última opción se utiliza tanto para **MariaDB** como para **MySQL**—; también figuran otros motores compatibles como `PostgreSQL`).
    - Al elegir un motor se autocompletan los campos recomendados:
      - **Librería del driver (`db.driverlib`):** ruta al `.jar` dentro de `lib/`.
-     - **Clase del driver (`db.driver`):** p. ej. `org.apache.derby.jdbc.EmbeddedDriver` o `com.mysql.jdbc.Driver`.
-     - **URL (`db.URL`):** p. ej. `jdbc:mysql://localhost:3306/unicentaopos` para MariaDB/MySQL.
+     - **Clase del driver (`db.driver`):** `org.apache.derby.jdbc.EmbeddedDriver`, `org.postgresql.Driver`, `org.mariadb.jdbc.Driver` o `com.mysql.cj.jdbc.Driver`. La clase legacy `com.mysql.jdbc.Driver` sigue funcionando con el JAR 5.1 incluido.
+     - **URL (`db.URL`):** p. ej. `jdbc:mysql://localhost:3306/unicentaopos` para MariaDB/MySQL o `jdbc:postgresql://localhost:5432/unicentaopos` para PostgreSQL.
    - Ingrese **Usuario** y **Contraseña** de la base de datos.
    - Pulse el botón **Test** para confirmar que la conexión es exitosa.
    - *Nota de seguridad:* Por defecto solo se permite cargar drivers JDBC ubicados dentro del directorio de la aplicación (`lib/`). Si necesita usar un driver externo del sistema, agregue `db.driverlib.allowexternal=true` en `unicentaopos.properties`.
@@ -228,8 +229,8 @@ Además de respaldar la base de datos (`~/unicentaopos-database` en Derby Embedd
 
 ## 8. Solución de problemas frecuentes
 
-- **Error `No se encontro Java 8 (javaw.exe)` en Windows:**
-  Instale JRE/JDK 8 (por ejemplo Eclipse Adoptium Temurin 8) o configure la variable de entorno `JAVA_HOME` apuntando a su instalación de Java 8.
+- **Error `No se encontro Java 8 o superior (javaw.exe)` en Windows:**
+  Instale JRE/JDK 8 o JDK 17 LTS (por ejemplo Eclipse Adoptium Temurin) o configure `JAVA_HOME` apuntando a esa instalación. El mensaje antiguo «No se encontro Java 8» correspondía a versiones anteriores de `start.bat`.
 - **Error `Database driver library is outside the application directory`:**
   Coloque el `.jar` del controlador JDBC dentro de la carpeta `lib/` de la aplicación y vuelva a seleccionarlo en Configuración, o agregue `db.driverlib.allowexternal=true` en `unicentaopos.properties`.
 - **La aplicación no abre o se cierra de inmediato:**

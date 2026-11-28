@@ -41,6 +41,11 @@ CP=$CP:$DIRNAME/lib/swingx-all-1.6.4.jar
 CP=$CP:$DIRNAME/lib/substance.jar
 CP=$CP:$DIRNAME/lib/substance-swingx.jar
 
+# Modern JDBC drivers (scram-sha-256 / caching_sha2_password).
+CP=$CP:$DIRNAME/lib/postgresql-42.7.7.jar
+CP=$CP:$DIRNAME/lib/mariadb-java-client-3.5.3.jar
+CP=$CP:$DIRNAME/lib/mysql-connector-j-8.4.0.jar
+
 # Apache Axis SOAP libraries.
 CP=$CP:$DIRNAME/lib/axis.jar
 CP=$CP:$DIRNAME/lib/jaxrpc.jar
@@ -67,5 +72,17 @@ case "`uname -s`" in
 Darwin) LIBRARYPATH=/lib/Mac_OS_X;;
 CYGWIN*|MINGW32*) LIBRARYPATH=/lib/Windows/i368-mingw32;;
 esac
+# Allow JAVA_HOME to select JDK 8/17 while keeping Java 7 bytecode.
+JAVA_BIN=java
+if [ -n "$JAVA_HOME" ] && [ -x "$JAVA_HOME/bin/java" ]; then
+    JAVA_BIN="$JAVA_HOME/bin/java"
+fi
+
+# JDK 9+ needs explicit opens for legacy Swing/Substance/Jasper reflection.
+JAVA9_OPTS=""
+if "$JAVA_BIN" --add-opens java.base/java.lang=ALL-UNNAMED -version >/dev/null 2>&1; then
+    JAVA9_OPTS="--add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.desktop/java.awt=ALL-UNNAMED"
+fi
+
 # start uniCenta oPOS
-java -cp $CP -Dswing.defaultlaf=javax.swing.plaf.metal.MetalLookAndFeel -Djava.library.path=$DIRNAME$LIBRARYPATH -Ddirname.path=$DIRNAME/ com.openbravo.pos.forms.StartPOS "$@"
+"$JAVA_BIN" $JAVA9_OPTS -cp "$CP" -Dswing.defaultlaf=javax.swing.plaf.metal.MetalLookAndFeel -Djava.library.path=$DIRNAME$LIBRARYPATH -Ddirname.path=$DIRNAME/ com.openbravo.pos.forms.StartPOS "$@"
